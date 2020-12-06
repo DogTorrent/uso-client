@@ -13,7 +13,7 @@ public class GameConfig {
     private static int judgeOffset=60;
     private static int pixelsPerTick =5;
     private static int startDelay=5000;
-    private static int hitBoxShowDelay=-20;
+    private static int hitBoxShowDelay=0;
     private static double scalingFactor=0.5;
     private static boolean isHighQuality=true;
 
