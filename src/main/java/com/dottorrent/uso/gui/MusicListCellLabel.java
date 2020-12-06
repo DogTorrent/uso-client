@@ -19,7 +19,7 @@ public class MusicListCellLabel extends JLabel {
     private boolean isHighQuality;
 
     public MusicListCellLabel(){
-        this(GameConfig.getInstance().getHighQuality());
+        this(GameConfig.getHighQuality());
     }
 
     public MusicListCellLabel(boolean isHighQuality) {

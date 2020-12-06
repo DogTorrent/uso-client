@@ -15,7 +15,7 @@ public class QualityLabel extends JLabel {
     boolean isHighQuality;
 
     public QualityLabel(){
-        this(GameConfig.getInstance().getHighQuality());
+        this(GameConfig.getHighQuality());
     }
 
     public QualityLabel(boolean isHighQuality){

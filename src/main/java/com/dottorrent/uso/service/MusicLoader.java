@@ -86,7 +86,8 @@ public class MusicLoader {
     private static void loadOsuBgCfgAndPrintToUso(PrintWriter usoFilePrinter, Path osuFilePath,
                                                       String backgroundFileTypeRegex) throws IOException{
         Scanner osuFileScanner=new Scanner(new BufferedInputStream(new FileInputStream(osuFilePath.toFile())));
-        Optional<MatchResult> backgroundStringMatch = osuFileScanner.findAll("(?<=" +
+        Optional<MatchResult> backgroundStringMatch = osuFileScanner.findAll(
+                "(?<=" +
                 "\\[Events]\\R" +
                 "//Background and Video events\\R" +
                 "([0-9],){2}\"" +
@@ -96,6 +97,20 @@ public class MusicLoader {
                 "\"(,[0-9]){2}\\R" +
                 ")")
                 .findFirst();
+        if(backgroundStringMatch.isEmpty()){
+            backgroundStringMatch = osuFileScanner.findAll(
+                    "(?<=" +
+                            "\\[Events]\\R" +
+                            "//Background and Video events\\R" +
+                            "(Video,([0-9]){0,5},\"(.){0,10}\"\\R)" +
+                            "([0-9],){2}\"" +
+                            ")" +
+                            ".+\\.(" + backgroundFileTypeRegex + ")"+
+                            "(?=" +
+                            "\"(,[0-9]){2}\\R" +
+                            ")")
+                    .findFirst();
+        }
         osuFileScanner.close();
         if(backgroundStringMatch.isPresent()){
             String background = backgroundStringMatch.get().group();
@@ -232,10 +247,22 @@ public class MusicLoader {
     }
 
     public static void main(String[] args) {
-        try {
-            transOsuToUso(Path.of("songs/1055661 Laur - Vindication/Laur - Vindication (Umo-) [Easy].osu"));
-        } catch (IOException e) {
-            e.printStackTrace();
+        Path songsDirPath=Path.of("songs");
+        if(songsDirPath.toFile().isDirectory()){
+            for(File songDir: Objects.requireNonNull(songsDirPath.toFile().listFiles(File::isDirectory))){
+                for(File osuFile: Objects.requireNonNull(songDir.listFiles(File::isFile))){
+                    if (osuFile.getName().endsWith(".osu")){
+                        System.out.println(osuFile.getName());
+                        try {
+                            transOsuToUso(osuFile.toPath());}
+                        catch (IOException e) {
+                        }
+                    }
+                }
+            }
         }
+
+
+
     }
 }

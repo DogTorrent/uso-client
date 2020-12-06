@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 /**
  * Description here
@@ -121,7 +122,11 @@ public class Music {
         MusicLoader.loadSongHitObjects(getCfgFilePath(),this);
     }
 
-    public void play() throws JavaLayerException{
-        player.play();
+    public void play() {
+        try {
+            player.play();
+        } catch (JavaLayerException e) {
+            e.printStackTrace();
+        }
     }
 }

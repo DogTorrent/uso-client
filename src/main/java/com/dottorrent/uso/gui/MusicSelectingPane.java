@@ -8,9 +8,9 @@ import com.dottorrent.uso.service.GameConfig;
 import com.dottorrent.uso.service.Music;
 
 import javax.swing.*;
+import javax.swing.plaf.ScrollBarUI;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.nio.file.Path;
 
 /**
@@ -24,7 +24,7 @@ public class MusicSelectingPane extends JLayeredPane {
     private QualityLabel bgImageLabel;
 
     public MusicSelectingPane() {
-        this(GameConfig.getInstance().getScalingFactor());
+        this(GameConfig.getScalingFactor());
     }
     public MusicSelectingPane(double scalingFactor) {
         this.scalingFactor = scalingFactor;
@@ -63,6 +63,14 @@ public class MusicSelectingPane extends JLayeredPane {
         musicListScrollPane.setOpaque(false);
         musicListScrollPane.getViewport().setOpaque(false);
         musicListScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        musicListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        musicListScrollPane.getVerticalScrollBar().setUI(new ScrollBarUI() {
+            @Override
+            public Dimension getPreferredSize(JComponent c) {
+                c.setPreferredSize(new Dimension(0,0));
+                return c.getPreferredSize();
+            }
+        });
         {
             musicList.addListSelectionListener(e -> {
                 Path imgPath=((Music)(musicList.getSelectedValue())).getBgImagePath();

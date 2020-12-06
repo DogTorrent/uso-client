@@ -15,7 +15,7 @@ public class QualityButton extends JButton {
     boolean isHighQuality;
 
     public QualityButton(){
-        this(GameConfig.getInstance().getHighQuality());
+        this(GameConfig.getHighQuality());
     }
 
     public QualityButton(boolean isHighQuality){

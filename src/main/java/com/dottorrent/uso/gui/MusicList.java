@@ -32,12 +32,16 @@ public class MusicList extends JList {
     }
 
     public MusicList(){
-        this(GameConfig.getInstance().getScalingFactor());
+        this(GameConfig.getScalingFactor());
     }
 
     @Override
     public Object getSelectedValue() {
         return songsList.get(getSelectedIndex());
+    }
+
+    public Music getSpecifiedMusic(int index){
+        return songsList.get(index);
     }
 
     public MusicList(double scalingFactor){

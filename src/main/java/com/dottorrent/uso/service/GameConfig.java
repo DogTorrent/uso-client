@@ -8,62 +8,75 @@ package com.dottorrent.uso.service;
  * @version 1.0.0 2020/11/21
  */
 public class GameConfig {
-    private int millisPerTick =17;
-    private int hitDelay=0;
-    private int judgeOffset=30;
-    private int millisPerPixel=34;
-    private double scalingFactor=0.5;
-    private boolean isHighQuality=true;
-    private static GameConfig gameConfigInstance =new GameConfig();
+    private static int millisPerTick =10;
+    private static int hitDelay=0;
+    private static int judgeOffset=60;
+    private static int pixelsPerTick =5;
+    private static int startDelay=5000;
+    private static int hitBoxShowDelay=-20;
+    private static double scalingFactor=0.5;
+    private static boolean isHighQuality=true;
 
-    public static GameConfig getInstance(){
-        return gameConfigInstance;
-    }
-
-    public int getMillisPerTick() {
+    public static int getMillisPerTick() {
         return millisPerTick;
     }
 
-    public void setMillisPerTick(int freshRate) {
-        this.millisPerTick = 1000/freshRate;
+    public static void setMillisPerTick(int freshRate) {
+        GameConfig.millisPerTick = 1000/freshRate;
     }
 
-    public int getHitDelay() {
+    public static int getHitDelay() {
         return hitDelay;
     }
 
-    public void setHitDelay(int hitDelay) {
-        this.hitDelay = hitDelay;
+    public static void setHitDelay(int hitDelay) {
+        GameConfig.hitDelay = hitDelay;
     }
 
-    public int getMillisPerPixel() {
-        return millisPerPixel;
+    public static int getPixelsPerTick() {
+        return pixelsPerTick;
     }
 
-    public void setMillisPerPixel(int millisPerPixel) {
-        this.millisPerPixel = millisPerPixel;
+    public static void setPixelsPerTick(int pixelsPerTick) {
+        GameConfig.pixelsPerTick = pixelsPerTick;
     }
 
-    public int getJudgeOffset() {
+    public static int getJudgeOffset() {
         return judgeOffset;
     }
 
-    public void setJudgeOffset(int judgeOffset) {
-        this.judgeOffset = judgeOffset;
+    public static void setJudgeOffset(int judgeOffset) {
+        GameConfig.judgeOffset = judgeOffset;
     }
 
-    public double getScalingFactor() {
+    public static double getScalingFactor() {
         return scalingFactor;
     }
 
-    public void setScalingFactor(double scalingFactor) {
-        this.scalingFactor = scalingFactor;
+    public static void setScalingFactor(double scalingFactor) {
+        GameConfig.scalingFactor = scalingFactor;
     }
 
-    public void setHighQuality(boolean highQuality) {
-        isHighQuality = highQuality;
+    public static void setHighQuality(boolean highQuality) {
+        GameConfig.isHighQuality = highQuality;
     }
-    public boolean getHighQuality() {
+    public static boolean getHighQuality() {
         return isHighQuality;
+    }
+
+    public static int getStartDelay() {
+        return startDelay;
+    }
+
+    public static void setStartDelay(int startDelay) {
+        GameConfig.startDelay = startDelay;
+    }
+
+    public static int getHitBoxShowDelay() {
+        return hitBoxShowDelay;
+    }
+
+    public static void setHitBoxShowDelay(int hitBoxShowDelay) {
+        GameConfig.hitBoxShowDelay = hitBoxShowDelay;
     }
 }
