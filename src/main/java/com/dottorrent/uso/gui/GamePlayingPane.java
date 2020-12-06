@@ -238,7 +238,7 @@ public class GamePlayingPane extends JLayeredPane {
             计算真正的开始动画的时间
             公式含义：
              startTime (音乐启动时间)
-             + ameConfig.getHitBoxShowDelay() (Config中设置的画面相对音乐延迟的时间，一般为负数，也就是提前，用于修正音乐启动时间，因为音乐启动可能有延迟)
+             + GameConfig.getHitBoxShowDelay() (Config中设置的画面相对音乐延迟的时间，一般为负数，也就是提前)
              + hitObject.getStartTime() (音符滑块到达判定线的相对时间，相对的是真正的音乐开始播放的时间，也就是前两项之和；在谱面文件中写死)
              - keyShowAdvancedMillis (音符滑块提前显示的毫秒数，也就是音符滑块从顶部下落到判定线所需要的时间，我们需要提前这么久开始让滑块显示在画面上)
              + GameConfig.getMillisPerTick() 每tick相隔的毫秒数，因为已经在可视区域的正上方隐藏区域提前初始化好了音符滑块，这算做第一次tick，所以实际第一次tick
@@ -255,9 +255,9 @@ public class GamePlayingPane extends JLayeredPane {
                         if (keyImageLabel.getY() <= gamePlayingPane.getHeight()) {
                             keyImageLabel.setLocation(keyImageLabel.getX(),
                                     keyImageLabel.getY() + GameConfig.getPixelsPerTick());
-//                            if(keyImageLabel.getY()==hitAreaY-keyImageLabel.getHeight()){
-//                                System.out.println(System.currentTimeMillis()-startTime-hitObject.getStartTime());
-//                            }
+                            if(keyImageLabel.getY()==hitAreaY-keyImageLabel.getHeight()){
+                                System.out.println(System.currentTimeMillis()-startTime-hitObject.getStartTime());
+                            }
                         } else {
                             gamePlayingPane.remove(keyImageLabel);
                             scheduledThreadPoolExecutor.shutdown();
