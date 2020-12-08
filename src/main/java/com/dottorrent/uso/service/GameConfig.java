@@ -1,6 +1,8 @@
 package com.dottorrent.uso.service;
 
 
+import java.awt.event.KeyEvent;
+
 /**
  * Description here
  *
@@ -9,13 +11,14 @@ package com.dottorrent.uso.service;
  */
 public class GameConfig {
     private static int millisPerTick =10;
-    private static int hitDelay=0;
-    private static int judgeOffset=60;
-    private static int pixelsPerTick =5;
+    private static int hitDelay=20;
+    private static int judgeOffset=100;
+    private static int pixelsPerTick =7;
     private static int startDelay=5000;
     private static int hitBoxShowDelay=0;
     private static double scalingFactor=0.5;
     private static boolean isHighQuality=true;
+    private static int[] lineKeyCodes ={KeyEvent.VK_D,KeyEvent.VK_F,KeyEvent.VK_J,KeyEvent.VK_K};
 
     public static int getMillisPerTick() {
         return millisPerTick;
@@ -78,5 +81,9 @@ public class GameConfig {
 
     public static void setHitBoxShowDelay(int hitBoxShowDelay) {
         GameConfig.hitBoxShowDelay = hitBoxShowDelay;
+    }
+
+    public static int getLineKeyCode(int index) {
+        return lineKeyCodes[index];
     }
 }

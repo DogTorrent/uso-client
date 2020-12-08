@@ -2,8 +2,10 @@
  * Created by JFormDesigner on Thu Nov 26 15:25:41 CST 2020
  */
 
-package com.dottorrent.uso.gui;
+package com.dottorrent.uso.gui.pane;
 
+import com.dottorrent.uso.gui.component.MusicList;
+import com.dottorrent.uso.gui.component.QualityLabel;
 import com.dottorrent.uso.service.GameConfig;
 import com.dottorrent.uso.service.Music;
 

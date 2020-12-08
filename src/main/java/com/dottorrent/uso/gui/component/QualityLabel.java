@@ -1,4 +1,4 @@
-package com.dottorrent.uso.gui;
+package com.dottorrent.uso.gui.component;
 
 import com.dottorrent.uso.service.GameConfig;
 

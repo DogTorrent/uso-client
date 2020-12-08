@@ -7,7 +7,7 @@ new FormModel {
 			name: "this"
 			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 				name: "musicListScrollPane"
-				add( new FormComponent( "com.dottorrent.uso.gui.MusicList" ) {
+				add( new FormComponent( "com.dottorrent.uso.gui.component.MusicList" ) {
 					name: "musicList"
 				} )
 			}, new FormLayoutConstraints( null ) {
@@ -16,7 +16,7 @@ new FormModel {
 				"width": 300
 				"height": 525
 			} )
-			add( new FormComponent( "com.dottorrent.uso.gui.QualityLabel" ) {
+			add( new FormComponent( "com.dottorrent.uso.gui.component.QualityLabel" ) {
 				name: "bgImageLabel"
 			}, new FormLayoutConstraints( null ) {
 				"location": new java.awt.Point( 0, 0 )

@@ -4,6 +4,9 @@
 
 package com.dottorrent.uso.gui;
 
+import com.dottorrent.uso.gui.component.QualityButton;
+import com.dottorrent.uso.gui.component.QualityLabel;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -172,7 +175,8 @@ public class WelcomeFrame extends JFrame {
     }
 
     private void localModeButtonMouseClicked(MouseEvent e) {
-        // TODO add your code here
+        new LocalGameFrame().enterMusicSelectingPane();
+        this.dispose();
     }
 
     private void initComponents() {
