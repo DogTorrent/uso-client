@@ -2,6 +2,7 @@ package com.dottorrent.uso.service;
 
 import com.dottorrent.uso.gui.pane.GamePlayingPane;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -67,8 +68,14 @@ public class LineHitObjKeyListener implements KeyListener {
         if(!judgingStarted){
             return;
         }
-        // 如果这一条轨道被阻塞了(也就是按键已经按下了，且识别到了长条而不是短滑块，按下的按键没放开)，就忽略事件
+        // 如果这一条轨道被阻塞了(也就是按键已经按下了，且按下的按键没放开)
         if(lockedHitObjIndex!=-1){
+            //如果是长条
+            if(hitObjects.get(lockedHitObjIndex).getEndTime()!=0){
+                if(gamePlayingPane!=null){
+                    gamePlayingPane.showHitResult(0);
+                }
+            }
             return;
         }
         long diff=GameConfig.getJudgeOffset();

@@ -32,7 +32,6 @@ public class GamePlayingPane extends JLayeredPane {
     private JLabel highLightHitResult;
     private ExecutorService lineExecutorService;
     private ExecutorService showHitResultExecutorService;
-    private ShowHitResultThread showHitResultThread;
     private LineThread[] lineThreads;
     private Music music;
     private long startTime;
@@ -118,7 +117,7 @@ public class GamePlayingPane extends JLayeredPane {
     public static void main(String[] args) {
         JFrame testFrame = new JFrame();
         testFrame.setUndecorated(true);
-        GamePlayingPane gamePlayingPane = new GamePlayingPane(new MusicList().getSpecifiedMusic(16));
+        GamePlayingPane gamePlayingPane = new GamePlayingPane(new MusicList().getSpecifiedMusic(0));
         testFrame.setContentPane(gamePlayingPane);
         testFrame.pack();
         testFrame.setVisible(true);
@@ -149,22 +148,20 @@ public class GamePlayingPane extends JLayeredPane {
 
         //---- highLightHitResult ----
         highLightHitResult.setPreferredSize(new Dimension(lineImageIcon.getIconWidth()*2,(int) (64*scalingFactor)));
+        highLightHitResult.setSize(new Dimension(lineImageIcon.getIconWidth()*2,(int) (64*scalingFactor)));
         highLightHitResult.setLocation((getPreferredSize().width-highLightHitResult.getPreferredSize().width)/2,
                 (getPreferredSize().height-highLightHitResult.getPreferredSize().height)/2);
-        highLightHitResult.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (64*scalingFactor)));
-        highLightHitResult.setHorizontalTextPosition(JLabel.CENTER);
-        highLightHitResult.setVerticalTextPosition(JLabel.CENTER);
+        highLightHitResult.setFont(new Font("Microsoft YaHei UI", Font.BOLD, (int) (64*scalingFactor)));
+        highLightHitResult.setHorizontalTextPosition(SwingConstants.CENTER);
+        highLightHitResult.setVerticalTextPosition(SwingConstants.CENTER);
         this.add(highLightHitResult,JLayeredPane.POPUP_LAYER);
-        highLightHitResult.setSize(new Dimension(lineImageIcon.getIconWidth()*2,(int) (64*scalingFactor)));
-        highLightHitResult.setForeground(new Color(255,255,255));
-        //highLightHitResult.setVisible(false);
 
 
         //---- lineImageLabels ----
         for (int i = 0; i < lineImageLabels.length; i++) {
             lineImageLabels[i].setIcon(lineImageIcon);
             lineImageLabels[i].setSize(lineImageIcon.getIconWidth(), lineImageIcon.getIconHeight());
-            lineImageLabels[i].setLocation((getPreferredSize().width-lineImageIcon.getIconWidth()*4)/2+lineImageIcon.getIconWidth()*i, 0);
+            lineImageLabels[i].setLocation((getPreferredSize().width-lineImageIcon.getIconWidth()*lineImageLabels.length)/2+lineImageIcon.getIconWidth()*i, 0);
             if (i == 0) {
                 this.add(lineImageLabels[i], JLayeredPane.DEFAULT_LAYER);
             } else {
@@ -182,8 +179,7 @@ public class GamePlayingPane extends JLayeredPane {
     private void initThreadPool() {
         lineExecutorService = Executors.newFixedThreadPool(4);
         lineThreads = new LineThread[4];
-        showHitResultExecutorService=Executors.newSingleThreadExecutor();
-        showHitResultThread=new ShowHitResultThread();
+        showHitResultExecutorService=Executors.newCachedThreadPool();
         for (int i = 0; i < lineThreads.length; i++) {
             lineThreads[i] = new LineThread(gamePlayingPane,keyImageIcon,i);
         }
@@ -197,17 +193,30 @@ public class GamePlayingPane extends JLayeredPane {
     private class ShowHitResultThread extends Thread{
         private long delay;
 
-        private void setDelay(long delay) {
+        public ShowHitResultThread(long delay) {
             this.delay = delay;
         }
 
         @Override
         public void run() {
+            if(Math.abs(delay)<40){
+                highLightHitResult.setForeground(new Color(91, 203, 87, 255));
+                highLightHitResult.setText("GREAT");
+            }else if(Math.abs(delay)<80){
+                highLightHitResult.setForeground(new Color(226, 143, 99, 255));
+                if(delay<0){
+                    highLightHitResult.setText("EARLY");
+                } else{
+                    highLightHitResult.setText("LATE");
+                }
+            }else {
+                highLightHitResult.setForeground(new Color(203, 87, 87, 255));
+                highLightHitResult.setText("MISS");
+            }
+            highLightHitResult.setVisible(true);
+            gamePlayingPane.repaint();
             try {
-                highLightHitResult.setText(String.valueOf(delay));
-                highLightHitResult.setVisible(true);
-                gamePlayingPane.repaint();
-                Thread.sleep(300);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
             }
             highLightHitResult.setVisible(false);
@@ -215,9 +224,7 @@ public class GamePlayingPane extends JLayeredPane {
         }
     }
     public void showHitResult(long delay){
-        showHitResultThread.interrupt();
-        showHitResultThread.setDelay(delay);
-        showHitResultExecutorService.execute(showHitResultThread);
+        showHitResultExecutorService.execute(new ShowHitResultThread(delay));
     }
 
     @Override

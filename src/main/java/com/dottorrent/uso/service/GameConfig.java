@@ -12,7 +12,7 @@ import java.awt.event.KeyEvent;
 public class GameConfig {
     private static int millisPerTick =10;
     private static int hitDelay=20;
-    private static int judgeOffset=100;
+    private static int judgeOffset=200;
     private static int pixelsPerTick =7;
     private static int startDelay=5000;
     private static int hitBoxShowDelay=0;
