@@ -10,6 +10,7 @@ import javazoom.jl.decoder.JavaLayerException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +29,6 @@ public class GamePlayingPane extends JLayeredPane {
     private double scalingFactor;
     private QualityLabel bgImageLabel;
     private QualityLabel[] lineImageLabels;
-    private QualityLabel keyListenerMaskLabel;
     private JLabel highLightHitResult;
     private ExecutorService lineExecutorService;
     private ExecutorService showHitResultExecutorService;
@@ -38,6 +38,7 @@ public class GamePlayingPane extends JLayeredPane {
     private GamePlayingPane gamePlayingPane;
     private int hitAreaY;
     private int lineBoldWidth;
+    public KeyboardFocusManager keyboardFocusManager=KeyboardFocusManager.getCurrentKeyboardFocusManager();
     /**
      * 音符滑块提前显示的毫秒数，也就是音符滑块从顶部下落到判定线所需要的时间，我们需要提前这么久开始让滑块显示在画面上
      */
@@ -60,9 +61,7 @@ public class GamePlayingPane extends JLayeredPane {
         return keyShowAdvancedMillis;
     }
 
-    public QualityLabel getKeyListenerMaskLabel() {
-        return keyListenerMaskLabel;
-    }
+
 
 
     public GamePlayingPane(Music music) {
@@ -98,7 +97,7 @@ public class GamePlayingPane extends JLayeredPane {
                 (int) (keyImageIcon.getIconHeight() * scalingFactor),
                 Image.SCALE_SMOOTH));
 
-        keyListenerMaskLabel=new QualityLabel();
+
         highLightHitResult=new JLabel();
 
         try {
@@ -141,10 +140,6 @@ public class GamePlayingPane extends JLayeredPane {
             );
         }
 
-        //---- keyListenerMaskLabel ----
-        this.add(keyListenerMaskLabel);
-        keyListenerMaskLabel.setFocusable(true);
-        keyListenerMaskLabel.requestFocus();
 
         //---- highLightHitResult ----
         highLightHitResult.setPreferredSize(new Dimension(lineImageIcon.getIconWidth()*2,(int) (64*scalingFactor)));
@@ -199,8 +194,17 @@ public class GamePlayingPane extends JLayeredPane {
 
         @Override
         public void run() {
+//            JLabel highLightHitResult=new JLabel();
+//            highLightHitResult.setPreferredSize(new Dimension(lineImageIcon.getIconWidth()*2,(int) (64*scalingFactor)));
+//            highLightHitResult.setSize(new Dimension(lineImageIcon.getIconWidth()*2,(int) (64*scalingFactor)));
+//            highLightHitResult.setLocation((getPreferredSize().width-highLightHitResult.getPreferredSize().width)/2,
+//                    (getPreferredSize().height-highLightHitResult.getPreferredSize().height)/2);
+//            highLightHitResult.setFont(new Font("Microsoft YaHei UI", Font.BOLD, (int) (64*scalingFactor)));
+//            highLightHitResult.setHorizontalTextPosition(SwingConstants.CENTER);
+//            highLightHitResult.setVerticalTextPosition(SwingConstants.CENTER);
+//            gamePlayingPane.add(highLightHitResult,JLayeredPane.POPUP_LAYER);
             if(Math.abs(delay)<40){
-                highLightHitResult.setForeground(new Color(91, 203, 87, 255));
+                highLightHitResult.setForeground(new Color(90, 203, 87, 255));
                 highLightHitResult.setText("GREAT");
             }else if(Math.abs(delay)<80){
                 highLightHitResult.setForeground(new Color(226, 143, 99, 255));

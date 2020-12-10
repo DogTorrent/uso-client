@@ -18,20 +18,30 @@ public class LocalGameFrame extends JFrame {
         this.setUndecorated(true);
     }
     public void enterMusicSelectingPane(){
+        if(this.getContentPane()!=null) {
+            this.getContentPane().setVisible(false);
+        }
         this.setContentPane(new MusicSelectingPane());
         if(!this.isVisible()) {
             this.pack();
             this.setLocationRelativeTo(null);
             this.setVisible(true);
         }
+        this.getContentPane().setVisible(true);
+        this.repaint();
     }
 
     public void enterGamePlayingPane(Music music){
+        if(this.getContentPane()!=null) {
+            this.getContentPane().setVisible(false);
+        }
         this.setContentPane(new GamePlayingPane(music));
         if(!this.isVisible()) {
             this.pack();
             this.setLocationRelativeTo(null);
             this.setVisible(true);
         }
+        this.getContentPane().setVisible(true);
+        this.repaint();
     }
 }

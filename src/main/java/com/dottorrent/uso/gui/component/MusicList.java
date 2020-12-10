@@ -44,6 +44,19 @@ public class MusicList extends JList {
         return songsList.get(index);
     }
 
+    public void setCellSize(int width,int height) {
+        if(width!=0&&height==0) {
+            listCellBgImageIcon.setImage(listCellBgImageIcon.getImage().getScaledInstance(
+                    (int) (width-40*scalingFactor),
+                    (int)((width-40*scalingFactor) / listCellBgImageIcon.getIconWidth() * listCellBgImageIcon.getIconHeight()),
+                    Image.SCALE_SMOOTH));
+            listCellBgImageSelectedIcon.setImage(listCellBgImageSelectedIcon.getImage().getScaledInstance(
+                    (int) (width-40*scalingFactor),
+                    (int)((width-40*scalingFactor) / listCellBgImageSelectedIcon.getIconWidth() * listCellBgImageSelectedIcon.getIconHeight()),
+                    Image.SCALE_SMOOTH));
+        }
+    }
+
     public MusicList(double scalingFactor){
         this.scalingFactor=scalingFactor;
         songsList=new LinkedList<>();
@@ -65,10 +78,6 @@ public class MusicList extends JList {
                 (int) (listCellBgImageSelectedIcon.getIconWidth()*scalingFactor),
                 (int) (listCellBgImageSelectedIcon.getIconHeight()*scalingFactor),
                 Image.SCALE_SMOOTH));
-        cellSize=new Dimension(
-                (int) (listCellBgImageIcon.getIconWidth()*scalingFactor),
-                (int) (listCellBgImageIcon.getIconHeight()*scalingFactor)
-        );
 
         setModel(new AbstractListModel(){
             @Override
@@ -87,13 +96,13 @@ public class MusicList extends JList {
             MusicListCellLabel cellLabel=new MusicListCellLabel();
             if(isSelected){
                 cellLabel.setIcon(listCellBgImageSelectedIcon);
-                cellLabel.setIconOffsetX(-40);
-                cellLabel.setTextOffsetX(-40);
+                cellLabel.setIconOffsetX((int) (-40*scalingFactor));
+                cellLabel.setTextOffsetX((int) (-40*scalingFactor));
             }else{
                 cellLabel.setIcon(listCellBgImageIcon);
                 if(index==cellHoveredIndex){
-                    cellLabel.setIconOffsetX(-20);
-                    cellLabel.setTextOffsetX(-20);
+                    cellLabel.setIconOffsetX((int) (-20*scalingFactor));
+                    cellLabel.setTextOffsetX((int) (-20*scalingFactor));
                 }
             }
             cellLabel.setText(music.getTitle()+" ["+music.getVersion()+"]");

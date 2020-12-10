@@ -15,6 +15,7 @@ import com.dottorrent.uso.service.HitObject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -34,9 +35,15 @@ public class LineThread extends Thread {
         hitObjectThreads = new ArrayList<>();
         hitObjectExecutorService = new ScheduledThreadPoolExecutor(10);
         lineHitObjKeyListener = new LineHitObjKeyListener(gamePlayingPane,GameConfig.getLineKeyCode(index));
-        gamePlayingPane.getKeyListenerMaskLabel().addKeyListener(lineHitObjKeyListener);
-
         this.keyImageIcon=keyImageIcon;
+        gamePlayingPane.keyboardFocusManager.addKeyEventPostProcessor(e -> {
+            if(e.getID()==KeyEvent.KEY_PRESSED){
+                lineHitObjKeyListener.keyPressed(e);
+            }else if (e.getID()==KeyEvent.KEY_RELEASED) {
+                lineHitObjKeyListener.keyReleased(e);
+            }
+            return false;
+        });
     }
 
     public void addHitObject(HitObject hitObject) {
@@ -61,7 +68,6 @@ public class LineThread extends Thread {
     @Override
     public void run() {
         lineHitObjKeyListener.setMusicStartTime(gamePlayingPane.getStartTime());
-//            keyboardHitJudgingService.initKeyListener(GameConfig.getLineKey(index));
         for (HitObjectThread hitObjectThread : hitObjectThreads) {
             long subtraction =
                     gamePlayingPane.getStartTime() + GameConfig.getHitBoxShowDelay() + hitObjectThread.getHitObject().getStartTime() - gamePlayingPane.getKeyShowAdvancedMillis();

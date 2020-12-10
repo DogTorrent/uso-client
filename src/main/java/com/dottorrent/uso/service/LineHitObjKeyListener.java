@@ -3,6 +3,7 @@ package com.dottorrent.uso.service;
 import com.dottorrent.uso.gui.pane.GamePlayingPane;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.function.Predicate;
  * @author .torrent
  * @version 1.0.0 2020/12/7
  */
-public class LineHitObjKeyListener implements KeyListener {
+public class LineHitObjKeyListener extends KeyAdapter {
     private int lockedHitObjIndex = -1;
     private ArrayList<HitObject> hitObjects;
     private long musicStartTime;
@@ -31,7 +32,7 @@ public class LineHitObjKeyListener implements KeyListener {
         hitObjects = new ArrayList<>();
     }
 
-    public LineHitObjKeyListener(GamePlayingPane gamePlayingPane,int keyCode) {
+    public LineHitObjKeyListener(GamePlayingPane gamePlayingPane, int keyCode) {
         this.keyCode=keyCode;
         this.gamePlayingPane=gamePlayingPane;
         hitObjects = new ArrayList<>();
@@ -51,10 +52,6 @@ public class LineHitObjKeyListener implements KeyListener {
 
     public void addHitObjects(HitObject hitObject) {
         hitObjects.add(hitObject);
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
     }
 
     @Override
@@ -88,7 +85,7 @@ public class LineHitObjKeyListener implements KeyListener {
             }
         }
         if(lockedHitObjIndex!=-1){
-            progressIndex=lockedHitObjIndex;
+            progressIndex=lockedHitObjIndex+1;
             if(hitObjects.get(lockedHitObjIndex).getEndTime()==0){
                 //是普通滑块的情况
                 //@TODO
@@ -131,7 +128,6 @@ public class LineHitObjKeyListener implements KeyListener {
                 System.out.println("Hit-L-End! "+diff);
             }else{
                 //@TODO
-//                System.out.println("Hit-L-Miss! "+diff);
             }
         }
         lockedHitObjIndex=-1;
