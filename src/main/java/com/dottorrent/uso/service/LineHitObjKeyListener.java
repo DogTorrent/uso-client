@@ -57,7 +57,6 @@ public class LineHitObjKeyListener extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
         long currentTime=System.currentTimeMillis();
-//        System.out.println("Pressed "+e.getKeyCode()+" "+keyCode+" "+lockedHitObjIndex);
         if(e.getKeyCode()!=keyCode){
             return;
         }
@@ -69,9 +68,8 @@ public class LineHitObjKeyListener extends KeyAdapter {
         if(lockedHitObjIndex!=-1){
             //如果是长条
             if(hitObjects.get(lockedHitObjIndex).getEndTime()!=0){
-                if(gamePlayingPane!=null){
-                    gamePlayingPane.showHitResult(0);
-                }
+                gamePlayingPane.getPlayingResult().setHitObjectsStatus(hitObjects.get(lockedHitObjIndex),
+                        PlayingResult.GREAT);
             }
             return;
         }
@@ -88,17 +86,18 @@ public class LineHitObjKeyListener extends KeyAdapter {
             progressIndex=lockedHitObjIndex+1;
             if(hitObjects.get(lockedHitObjIndex).getEndTime()==0){
                 //是普通滑块的情况
-                //@TODO
-                if(gamePlayingPane!=null){
-                    gamePlayingPane.showHitResult(diff);
+                if(Math.abs(diff)<=40) {
+                    gamePlayingPane.getPlayingResult().setHitObjectsStatus(hitObjects.get(lockedHitObjIndex),
+                            PlayingResult.GREAT);
+                }else{
+                    gamePlayingPane.getPlayingResult().setHitObjectsStatus(hitObjects.get(lockedHitObjIndex),
+                            (diff>0?PlayingResult.LATE:PlayingResult.EARLY));
                 }
                 System.out.println("Hit-S! "+diff);
             }else{
                 //是长条滑块的情况
-                //@TODO
-                if(gamePlayingPane!=null){
-                    gamePlayingPane.showHitResult(diff);
-                }
+                gamePlayingPane.getPlayingResult().setHitObjectsStatus(hitObjects.get(lockedHitObjIndex),
+                        PlayingResult.GREAT);
                 System.out.println("Hit-L! "+diff);
             }
         }
@@ -120,14 +119,10 @@ public class LineHitObjKeyListener extends KeyAdapter {
         }
         if(hitObjects.get(lockedHitObjIndex).getEndTime()!=0){
             long diff=currentTime-musicStartTime+GameConfig.getHitDelay()-hitObjects.get(lockedHitObjIndex).getEndTime();
-            if(Math.abs(diff)<GameConfig.getJudgeOffset()){
-                //@TODO
-                if(gamePlayingPane!=null){
-                    gamePlayingPane.showHitResult(diff);
-                }
-                System.out.println("Hit-L-End! "+diff);
-            }else{
-                //@TODO
+            if(diff<0){
+                gamePlayingPane.getPlayingResult().setHitObjectsStatus(hitObjects.get(lockedHitObjIndex),
+                        PlayingResult.MISS);
+                System.out.println("Hit-L-End-Miss! "+diff);
             }
         }
         lockedHitObjIndex=-1;

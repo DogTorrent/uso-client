@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class LineThread extends Thread {
     public int index;
     private GamePlayingPane gamePlayingPane;
-    private ArrayList<HitObjectThread> hitObjectThreads;
+    private ArrayList<HitObjectThread> lineHitObjectThreads;
     private ScheduledExecutorService hitObjectExecutorService;
     private LineHitObjKeyListener lineHitObjKeyListener;
     private ImageIcon keyImageIcon;
@@ -32,7 +32,7 @@ public class LineThread extends Thread {
     public LineThread(GamePlayingPane gamePlayingPane,ImageIcon keyImageIcon,int index) {
         this.gamePlayingPane=gamePlayingPane;
         this.index = index;
-        hitObjectThreads = new ArrayList<>();
+        lineHitObjectThreads = new ArrayList<>();
         hitObjectExecutorService = new ScheduledThreadPoolExecutor(10);
         lineHitObjKeyListener = new LineHitObjKeyListener(gamePlayingPane,GameConfig.getLineKeyCode(index));
         this.keyImageIcon=keyImageIcon;
@@ -61,14 +61,14 @@ public class LineThread extends Thread {
                     )
             );
         }
-        hitObjectThreads.add(new HitObjectThread(gamePlayingPane,hitObject, keyImageLabel));
+        lineHitObjectThreads.add(new HitObjectThread(gamePlayingPane,hitObject, keyImageLabel));
         lineHitObjKeyListener.addHitObjects(hitObject);
     }
 
     @Override
     public void run() {
         lineHitObjKeyListener.setMusicStartTime(gamePlayingPane.getStartTime());
-        for (HitObjectThread hitObjectThread : hitObjectThreads) {
+        for (HitObjectThread hitObjectThread : lineHitObjectThreads) {
             long subtraction =
                     gamePlayingPane.getStartTime() + GameConfig.getHitBoxShowDelay() + hitObjectThread.getHitObject().getStartTime() - gamePlayingPane.getKeyShowAdvancedMillis();
                 /*
