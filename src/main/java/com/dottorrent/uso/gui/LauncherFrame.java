@@ -20,7 +20,7 @@ import java.io.IOException;
 /**
  * @author Brainrain
  */
-public class WelcomeFrame extends JFrame {
+public class LauncherFrame extends JFrame {
     private int mouseClickX;
     private int mouseClickY;
     private ImageIcon bgImageIcon;
@@ -44,7 +44,7 @@ public class WelcomeFrame extends JFrame {
     private QualityLabel subLogoImageLabel;
     private QualityLabel bgImageLabel;
 
-    public WelcomeFrame() {
+    public LauncherFrame() {
         this(0.5);
     }
 
@@ -55,7 +55,7 @@ public class WelcomeFrame extends JFrame {
                 Image.SCALE_SMOOTH));
     }
 
-    public WelcomeFrame(double scalingFactor) {
+    public LauncherFrame(double scalingFactor) {
         this.scalingFactor = scalingFactor;
         bgImageIcon = new ImageIcon(getClass().getResource("/pictures/bg.png"));
         mainLogoImageIcon = new ImageIcon(getClass().getResource("/pictures/logo_main.png"));
@@ -123,9 +123,9 @@ public class WelcomeFrame extends JFrame {
 
     public static void main(String[] args) {
         if (args.length >= 1) {
-            new WelcomeFrame(Double.parseDouble(args[0])).setVisible(true);
+            new LauncherFrame(Double.parseDouble(args[0])).setVisible(true);
         } else {
-            new WelcomeFrame().setVisible(true);
+            new LauncherFrame().setVisible(true);
         }
     }
 

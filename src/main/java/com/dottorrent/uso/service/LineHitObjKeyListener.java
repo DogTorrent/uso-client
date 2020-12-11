@@ -66,11 +66,6 @@ public class LineHitObjKeyListener extends KeyAdapter {
         }
         // 如果这一条轨道被阻塞了(也就是按键已经按下了，且按下的按键没放开)
         if(lockedHitObjIndex!=-1){
-            //如果是长条
-            if(hitObjects.get(lockedHitObjIndex).getEndTime()!=0){
-                gamePlayingPane.getPlayingResult().setHitObjectsStatus(hitObjects.get(lockedHitObjIndex),
-                        PlayingResult.GREAT);
-            }
             return;
         }
         long diff=GameConfig.getJudgeOffset();

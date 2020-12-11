@@ -5,6 +5,7 @@ import com.dottorrent.uso.gui.pane.MusicSelectingPane;
 import com.dottorrent.uso.service.Music;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Description here
@@ -13,13 +14,18 @@ import javax.swing.*;
  * @version 1.0.0 2020/11/28
  */
 public class LocalGameFrame extends JFrame {
+    private Container oldPane;
+    private Container defaultPane;
+
     public LocalGameFrame(){
         super();
         this.setUndecorated(true);
+        this.defaultPane=this.getContentPane();
     }
     public void enterMusicSelectingPane(){
-        if(this.getContentPane()!=null) {
-            this.getContentPane().setVisible(false);
+        if(this.getContentPane()!=defaultPane&&this.getContentPane()!=null) {
+            oldPane=this.getContentPane();
+            this.setVisible(false);
         }
         this.setContentPane(new MusicSelectingPane());
         if(!this.isVisible()) {
@@ -32,8 +38,9 @@ public class LocalGameFrame extends JFrame {
     }
 
     public void enterGamePlayingPane(Music music){
-        if(this.getContentPane()!=null) {
-            this.getContentPane().setVisible(false);
+        if(this.getContentPane()!=defaultPane&&this.getContentPane()!=null) {
+            oldPane=this.getContentPane();
+            oldPane.setVisible(false);
         }
         this.setContentPane(new GamePlayingPane(music));
         if(!this.isVisible()) {
@@ -43,5 +50,9 @@ public class LocalGameFrame extends JFrame {
         }
         this.getContentPane().setVisible(true);
         this.repaint();
+    }
+
+    public Container getOldPane() {
+        return oldPane;
     }
 }

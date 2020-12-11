@@ -24,6 +24,11 @@ public class PlayingResult {
         this.hitObjectsStatus=new ArrayList<>();
         for(HitObject hitObject:hitObjects){
             this.hitObjectsStatus.add(MISS);
+            if(hitObject.getEndTime()!=0){
+                totalScore+=4;
+            } else {
+                totalScore+=2;
+            }
         }
     }
 
@@ -53,5 +58,10 @@ public class PlayingResult {
 
     public void setHitObjectsStatus(HitObject hitObject,int status) {
         hitObjectsStatus.set(hitObjects.indexOf(hitObject),status);
+        if(status==GREAT){
+            score+=2;
+        }else if(status!=MISS){
+            score+=1;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.dottorrent.uso.gui.pane;
 
+import com.dottorrent.uso.gui.LocalGameFrame;
 import com.dottorrent.uso.gui.thread.LineThread;
 import com.dottorrent.uso.gui.component.MusicList;
 import com.dottorrent.uso.gui.component.QualityLabel;
@@ -39,6 +40,7 @@ public class GamePlayingPane extends JLayeredPane {
     private Music music;
     private long startTime;
     private GamePlayingPane gamePlayingPane;
+    private QualityLabel scoreBoardLabel;
     private int hitAreaY;
     private int lineBoldWidth;
     private ArrayList<HitObject> hitObjects;
@@ -124,6 +126,7 @@ public class GamePlayingPane extends JLayeredPane {
         }
         hitObjects=(ArrayList<HitObject>)music.getHitObjects();
         playingResult=new PlayingResult(hitObjects);
+        scoreBoardLabel=new QualityLabel();
         initComponents();
         initThreadPool();
     }
@@ -177,6 +180,16 @@ public class GamePlayingPane extends JLayeredPane {
             }
         }
 
+        //---- scoreBoardLabel ----
+        scoreBoardLabel.setText(0+" / "+playingResult.getTotalScore());
+        scoreBoardLabel.setFont(new Font("Microsoft YaHei UI", Font.BOLD, (int) (48*scalingFactor)));
+        scoreBoardLabel.setSize(this.getPreferredSize().width/2,(int) (48*scalingFactor));
+        scoreBoardLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        scoreBoardLabel.setVerticalAlignment(SwingConstants.CENTER);
+        scoreBoardLabel.setLocation(this.getPreferredSize().width-scoreBoardLabel.getWidth()-(int) (20*scalingFactor),
+                (int) (20*scalingFactor));
+        this.add(scoreBoardLabel);
+
         //---- bgImageLabel ----
         bgImageLabel.setIcon(bgImageIcon);
         bgImageLabel.setSize(bgImageIcon.getIconWidth(), bgImageIcon.getIconHeight());
@@ -221,7 +234,7 @@ public class GamePlayingPane extends JLayeredPane {
                 long endTime=
                         GameConfig.getJudgeOffset()+gamePlayingPane.startTime-GameConfig.getHitDelay()+hitObject.getEndTime();
                 if(System.currentTimeMillis()>endTime){
-                    scheduledThreadPoolExecutor.shutdownNow();
+                    scheduledThreadPoolExecutor.shutdown();
                     return;
                 }
             }
@@ -243,6 +256,7 @@ public class GamePlayingPane extends JLayeredPane {
             } catch (InterruptedException ignored) {
             }
             highLightHitResult.setVisible(false);
+            scoreBoardLabel.setText(playingResult.getScore()+" / "+playingResult.getTotalScore());
             gamePlayingPane.repaint();
         }
     }
@@ -250,7 +264,7 @@ public class GamePlayingPane extends JLayeredPane {
     public void initHitResultShowThreads(){
         for(HitObject hitObject:hitObjects){
             showHitResultExecutor.schedule(new ShowHitResultThread(hitObject),
-                    GameConfig.getJudgeOffset()+gamePlayingPane.startTime-GameConfig.getHitDelay()+hitObject.getStartTime()-System.currentTimeMillis(),
+                    GameConfig.getJudgeOffset()+this.startTime-GameConfig.getHitDelay()+hitObject.getStartTime()-System.currentTimeMillis(),
                     TimeUnit.MILLISECONDS);
         }
     }
@@ -259,13 +273,11 @@ public class GamePlayingPane extends JLayeredPane {
     public void setVisible(boolean aFlag) {
         super.setVisible(aFlag);
         if (aFlag) {
-            new ScheduledThreadPoolExecutor(1).execute(() -> {
-                startTime = GameConfig.getStartDelay() + System.currentTimeMillis();
-                for (LineThread lineThread : lineThreads) {
-                    lineExecutorService.execute(lineThread);
-                }
-                new ScheduledThreadPoolExecutor(1).schedule(() -> music.play(), startTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-            });
+            startTime = GameConfig.getStartDelay() + System.currentTimeMillis();
+            for (LineThread lineThread : lineThreads) {
+                lineExecutorService.execute(lineThread);
+            }
+            new ScheduledThreadPoolExecutor(1).schedule(() -> music.play(), startTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             initHitResultShowThreads();
             System.out.println(music.getTitle() + " " + music.getVersion());
         }
