@@ -39,7 +39,7 @@ public class LauncherFrame extends JFrame {
     private QualityButton exitButton;
     private QualityButton settingsButton;
     private QualityButton localModeButton;
-    private QualityButton internetModeButton;
+    private QualityButton onlineModeButton;
     private QualityLabel mainLogoImageLabel;
     private QualityLabel subLogoImageLabel;
     private QualityLabel bgImageLabel;
@@ -114,7 +114,7 @@ public class LauncherFrame extends JFrame {
         exitButton = new QualityButton();
         settingsButton = new QualityButton();
         localModeButton = new QualityButton();
-        internetModeButton = new QualityButton();
+        onlineModeButton = new QualityButton();
         mainLogoImageLabel = new QualityLabel();
         subLogoImageLabel = new QualityLabel();
         bgImageLabel = new QualityLabel();
@@ -175,7 +175,12 @@ public class LauncherFrame extends JFrame {
     }
 
     private void localModeButtonMouseClicked(MouseEvent e) {
-        new LocalGameFrame().enterMusicSelectingPane();
+        new LocalGameFrame(this).enterMusicSelectingPane();
+        this.dispose();
+    }
+
+    private void onlineModeButtonMouseClicked(MouseEvent e) {
+        new OnlineGameFrame(this).enterMusicSelectingPane();
         this.dispose();
     }
 
@@ -276,21 +281,26 @@ public class LauncherFrame extends JFrame {
             welcomeLayeredPane.add(localModeButton, JLayeredPane.DEFAULT_LAYER);
 
             //---- internetModeButton ----
-            internetModeButton.setText("\u7ebf\u4e0a\u6a21\u5f0f");
-            internetModeButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 22));
-            internetModeButton.setHorizontalTextPosition(SwingConstants.CENTER);
-            internetModeButton.setContentAreaFilled(false);
-            internetModeButton.setBorderPainted(false);
-            internetModeButton.setIcon(buttonImageIcon);
-            internetModeButton.setForeground(new Color(219, 219, 219));
-            internetModeButton.setPressedIcon(buttonPressedImageIcon);
-            internetModeButton.addMouseMotionListener(new MouseMotionAdapter() {
+            onlineModeButton.setText("\u7ebf\u4e0a\u6a21\u5f0f");
+            onlineModeButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, 22));
+            onlineModeButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            onlineModeButton.setContentAreaFilled(false);
+            onlineModeButton.setBorderPainted(false);
+            onlineModeButton.setIcon(buttonImageIcon);
+            onlineModeButton.setForeground(new Color(219, 219, 219));
+            onlineModeButton.setPressedIcon(buttonPressedImageIcon);
+            onlineModeButton.addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseMoved(MouseEvent e) {
                     bgImageMovedWithMouse(e);
                 }
             });
-            internetModeButton.addMouseListener(new MouseAdapter() {
+            onlineModeButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    onlineModeButtonMouseClicked(e);
+                }
+
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     componentMouseEntered(e);
@@ -301,11 +311,11 @@ public class LauncherFrame extends JFrame {
                     componentMouseExited(e);
                 }
             });
-            internetModeButton.setBounds(getPreferredSize().width - getPreferredSize().width / 5 - 180,
+            onlineModeButton.setBounds(getPreferredSize().width - getPreferredSize().width / 5 - 180,
                     getPreferredSize().height / 5 * 4,
                     180,
                     60);
-            welcomeLayeredPane.add(internetModeButton, JLayeredPane.DEFAULT_LAYER);
+            welcomeLayeredPane.add(onlineModeButton, JLayeredPane.DEFAULT_LAYER);
 
             //---- mainLogoImageLabel ----
             mainLogoImageLabel.setIcon(mainLogoImageIcon);
@@ -376,4 +386,5 @@ public class LauncherFrame extends JFrame {
         setLocationRelativeTo(null);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
+
 }

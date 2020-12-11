@@ -1,9 +1,8 @@
 package com.dottorrent.uso.gui.pane;
 
-import com.dottorrent.uso.gui.LocalGameFrame;
-import com.dottorrent.uso.gui.thread.LineThread;
 import com.dottorrent.uso.gui.component.MusicList;
 import com.dottorrent.uso.gui.component.QualityLabel;
+import com.dottorrent.uso.gui.thread.LineThread;
 import com.dottorrent.uso.service.GameConfig;
 import com.dottorrent.uso.service.HitObject;
 import com.dottorrent.uso.service.Music;
@@ -16,8 +15,10 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Description here
@@ -26,13 +27,16 @@ import java.util.concurrent.*;
  * @version 1.0.0 2020/11/28
  */
 public class GamePlayingPane extends JLayeredPane {
+    public KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
     private ImageIcon bgImageIcon;
     private ImageIcon lineImageIcon;
     private ImageIcon keyImageIcon;
+    private ImageIcon finalResultImageIcon;
     private double scalingFactor;
     private QualityLabel bgImageLabel;
+    private QualityLabel finalResultImageLabel;
     private QualityLabel[] lineImageLabels;
-    private JLabel highLightHitResult;
+    private JLabel highLightHitResultLabel;
     private ExecutorService lineExecutorService;
     private ScheduledThreadPoolExecutor showHitResultExecutor;
     private PlayingResult playingResult;
@@ -44,32 +48,10 @@ public class GamePlayingPane extends JLayeredPane {
     private int hitAreaY;
     private int lineBoldWidth;
     private ArrayList<HitObject> hitObjects;
-    public KeyboardFocusManager keyboardFocusManager=KeyboardFocusManager.getCurrentKeyboardFocusManager();
     /**
      * 音符滑块提前显示的毫秒数，也就是音符滑块从顶部下落到判定线所需要的时间，我们需要提前这么久开始让滑块显示在画面上
      */
     private long keyShowAdvancedMillis;
-
-
-    public QualityLabel[] getLineImageLabels() {
-        return lineImageLabels;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public int getLineBoldWidth() {
-        return lineBoldWidth;
-    }
-
-    public long getKeyShowAdvancedMillis() {
-        return keyShowAdvancedMillis;
-    }
-
-    public PlayingResult getPlayingResult() {
-        return playingResult;
-    }
 
     public GamePlayingPane(Music music) {
         this(music, GameConfig.getScalingFactor());
@@ -87,7 +69,7 @@ public class GamePlayingPane extends JLayeredPane {
                     (int) (1920 * scalingFactor),
                     (int) (1080 * scalingFactor),
                     Image.SCALE_SMOOTH));
-        }else {
+        } else {
             bgImageIcon = new ImageIcon(getClass().getResource("/pictures/bg.png"));
             bgImageIcon.setImage(bgImageIcon.getImage().getScaledInstance(
                     (int) (bgImageIcon.getIconWidth() * scalingFactor + 96),
@@ -113,7 +95,12 @@ public class GamePlayingPane extends JLayeredPane {
                 (int) (keyImageIcon.getIconHeight() * scalingFactor),
                 Image.SCALE_SMOOTH));
 
-        highLightHitResult=new JLabel();
+        finalResultImageIcon = new ImageIcon(getClass().getResource("/pictures/music_info.png"));
+        finalResultImageIcon.setImage(finalResultImageIcon.getImage().getScaledInstance(
+                (int) (finalResultImageIcon.getIconWidth() * scalingFactor),
+                (int) (finalResultImageIcon.getIconHeight() * scalingFactor),
+                Image.SCALE_SMOOTH));
+        finalResultImageLabel = new QualityLabel();
 
         try {
             music.initHitObjects();
@@ -124,9 +111,10 @@ public class GamePlayingPane extends JLayeredPane {
         } catch (JavaLayerException e) {
             e.printStackTrace();
         }
-        hitObjects=(ArrayList<HitObject>)music.getHitObjects();
-        playingResult=new PlayingResult(hitObjects);
-        scoreBoardLabel=new QualityLabel();
+        hitObjects = (ArrayList<HitObject>) music.getHitObjects();
+        playingResult = new PlayingResult(hitObjects);
+        scoreBoardLabel = new QualityLabel();
+        highLightHitResultLabel = new JLabel();
         initComponents();
         initThreadPool();
     }
@@ -140,6 +128,26 @@ public class GamePlayingPane extends JLayeredPane {
         testFrame.setVisible(true);
         testFrame.getContentPane().setVisible(true);
         testFrame.setLocationRelativeTo(null);
+    }
+
+    public QualityLabel[] getLineImageLabels() {
+        return lineImageLabels;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public int getLineBoldWidth() {
+        return lineBoldWidth;
+    }
+
+    public long getKeyShowAdvancedMillis() {
+        return keyShowAdvancedMillis;
+    }
+
+    public PlayingResult getPlayingResult() {
+        return playingResult;
     }
 
     private void initComponents() {
@@ -159,20 +167,20 @@ public class GamePlayingPane extends JLayeredPane {
         }
 
         //---- highLightHitResult ----
-        highLightHitResult.setPreferredSize(new Dimension(lineImageIcon.getIconWidth()*2,(int) (64*scalingFactor)));
-        highLightHitResult.setSize(new Dimension(lineImageIcon.getIconWidth()*2,(int) (64*scalingFactor)));
-        highLightHitResult.setLocation((getPreferredSize().width-highLightHitResult.getPreferredSize().width)/2,
-                (getPreferredSize().height-highLightHitResult.getPreferredSize().height)/2);
-        highLightHitResult.setFont(new Font("Microsoft YaHei UI", Font.BOLD, (int) (64*scalingFactor)));
-        highLightHitResult.setHorizontalTextPosition(SwingConstants.CENTER);
-        highLightHitResult.setVerticalTextPosition(SwingConstants.CENTER);
-        this.add(highLightHitResult,JLayeredPane.POPUP_LAYER);
+        highLightHitResultLabel.setPreferredSize(new Dimension(lineImageIcon.getIconWidth() * 2, (int) (64 * scalingFactor)));
+        highLightHitResultLabel.setSize(new Dimension(lineImageIcon.getIconWidth() * 2, (int) (64 * scalingFactor)));
+        highLightHitResultLabel.setLocation((getPreferredSize().width - highLightHitResultLabel.getPreferredSize().width) / 2,
+                (getPreferredSize().height - highLightHitResultLabel.getPreferredSize().height) / 2);
+        highLightHitResultLabel.setFont(new Font("Microsoft YaHei UI", Font.BOLD, (int) (64 * scalingFactor)));
+        highLightHitResultLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        highLightHitResultLabel.setVerticalTextPosition(SwingConstants.CENTER);
+        this.add(highLightHitResultLabel, JLayeredPane.POPUP_LAYER);
 
         //---- lineImageLabels ----
         for (int i = 0; i < lineImageLabels.length; i++) {
             lineImageLabels[i].setIcon(lineImageIcon);
             lineImageLabels[i].setSize(lineImageIcon.getIconWidth(), lineImageIcon.getIconHeight());
-            lineImageLabels[i].setLocation((getPreferredSize().width-lineImageIcon.getIconWidth()*lineImageLabels.length)/2+lineImageIcon.getIconWidth()*i, 0);
+            lineImageLabels[i].setLocation((getPreferredSize().width - lineImageIcon.getIconWidth() * lineImageLabels.length) / 2 + lineImageIcon.getIconWidth() * i, 0);
             if (i == 0) {
                 this.add(lineImageLabels[i], JLayeredPane.DEFAULT_LAYER);
             } else {
@@ -181,14 +189,27 @@ public class GamePlayingPane extends JLayeredPane {
         }
 
         //---- scoreBoardLabel ----
-        scoreBoardLabel.setText(0+" / "+playingResult.getTotalScore());
-        scoreBoardLabel.setFont(new Font("Microsoft YaHei UI", Font.BOLD, (int) (48*scalingFactor)));
-        scoreBoardLabel.setSize(this.getPreferredSize().width/2,(int) (48*scalingFactor));
+        scoreBoardLabel.setText(0 + " / " + playingResult.getTotalScore());
+        scoreBoardLabel.setFont(new Font("Microsoft YaHei UI", Font.BOLD, (int) (48 * scalingFactor)));
+        scoreBoardLabel.setSize(this.getPreferredSize().width / 2, (int) (48 * scalingFactor));
         scoreBoardLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         scoreBoardLabel.setVerticalAlignment(SwingConstants.CENTER);
-        scoreBoardLabel.setLocation(this.getPreferredSize().width-scoreBoardLabel.getWidth()-(int) (20*scalingFactor),
-                (int) (20*scalingFactor));
+        scoreBoardLabel.setLocation(this.getPreferredSize().width - scoreBoardLabel.getWidth() - (int) (20 * scalingFactor),
+                (int) (20 * scalingFactor));
         this.add(scoreBoardLabel);
+
+        //---- finalResultImageLabel ----
+        finalResultImageLabel.setVisible(false);
+        finalResultImageLabel.setIcon(finalResultImageIcon);
+        finalResultImageLabel.setSize(finalResultImageIcon.getIconWidth(), finalResultImageIcon.getIconHeight());
+        finalResultImageLabel.setPreferredSize(new Dimension(finalResultImageIcon.getIconWidth(),
+                finalResultImageIcon.getIconHeight()));
+        finalResultImageLabel.setLocation((getPreferredSize().width - finalResultImageLabel.getWidth()) / 2,
+                (getPreferredSize().height - finalResultImageLabel.getHeight()) / 2);
+        finalResultImageLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        finalResultImageLabel.setVerticalTextPosition(SwingConstants.TOP);
+        finalResultImageLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
+        finalResultImageLabel.setForeground(new Color(200, 200, 200));
 
         //---- bgImageLabel ----
         bgImageLabel.setIcon(bgImageIcon);
@@ -200,9 +221,9 @@ public class GamePlayingPane extends JLayeredPane {
     private void initThreadPool() {
         lineExecutorService = Executors.newFixedThreadPool(4);
         lineThreads = new LineThread[4];
-        showHitResultExecutor =new ScheduledThreadPoolExecutor(20);
+        showHitResultExecutor = new ScheduledThreadPoolExecutor(20);
         for (int i = 0; i < lineThreads.length; i++) {
-            lineThreads[i] = new LineThread(gamePlayingPane,keyImageIcon,i);
+            lineThreads[i] = new LineThread(gamePlayingPane, keyImageIcon, i);
         }
 
         for (HitObject hitObject : hitObjects) {
@@ -210,63 +231,52 @@ public class GamePlayingPane extends JLayeredPane {
         }
     }
 
-    private class ShowHitResultThread extends Thread{
-        private HitObject hitObject;
-        private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
-        public ShowHitResultThread(HitObject hitObject) {
-            this.hitObject=hitObject;
-            if(hitObject.getEndTime()!=0){
-                scheduledThreadPoolExecutor=new ScheduledThreadPoolExecutor(1);
-            }
-        }
-
-        @Override
-        public void run() {
-            if(hitObject.getEndTime()==0){
-                draw();
-            }else{
-                scheduledThreadPoolExecutor.scheduleAtFixedRate(this::draw,0,200,
-                        TimeUnit.MILLISECONDS);
-            }
-        }
-        private void draw(){
-            if(hitObject.getEndTime()!=0){
-                long endTime=
-                        GameConfig.getJudgeOffset()+gamePlayingPane.startTime-GameConfig.getHitDelay()+hitObject.getEndTime();
-                if(System.currentTimeMillis()>endTime){
-                    scheduledThreadPoolExecutor.shutdown();
-                    return;
-                }
-            }
-            int status=playingResult.getHitObjectsStatus(hitObject);
-            if(status==PlayingResult.GREAT){
-                highLightHitResult.setForeground(new Color(90, 203, 87, 255));
-                highLightHitResult.setText("GREAT");
-            }else if(status==PlayingResult.MISS){
-                highLightHitResult.setForeground(new Color(203, 87, 87, 255));
-                highLightHitResult.setText("MISS");
-            }else {
-                highLightHitResult.setForeground(new Color(226, 143, 99, 255));
-                highLightHitResult.setText(status==PlayingResult.LATE?"LATE":"EARLY");
-            }
-            highLightHitResult.setVisible(true);
-            gamePlayingPane.repaint();
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignored) {
-            }
-            highLightHitResult.setVisible(false);
-            scoreBoardLabel.setText(playingResult.getScore()+" / "+playingResult.getTotalScore());
-            gamePlayingPane.repaint();
+    public void initHitResultShowThreads() {
+        for (HitObject hitObject : hitObjects) {
+            showHitResultExecutor.schedule(new ShowHitResultThread(hitObject),
+                    GameConfig.getJudgeOffset() + this.startTime - GameConfig.getHitDelay() + hitObject.getStartTime() - System.currentTimeMillis(),
+                    TimeUnit.MILLISECONDS);
         }
     }
 
-    public void initHitResultShowThreads(){
-        for(HitObject hitObject:hitObjects){
-            showHitResultExecutor.schedule(new ShowHitResultThread(hitObject),
-                    GameConfig.getJudgeOffset()+this.startTime-GameConfig.getHitDelay()+hitObject.getStartTime()-System.currentTimeMillis(),
-                    TimeUnit.MILLISECONDS);
-        }
+    private void showFinalResult() {
+        finalResultImageLabel.setText("<html>" +
+                "<head>" +
+                "<meta charset=\"utf-8\"/>" +
+                "<style type=\"text/css\">" +
+                ".body { " +
+                "width:" + (int) (finalResultImageLabel.getWidth() - 20 * scalingFactor) + "px;" +
+                "padding-left: " + (int) (30 * scalingFactor) + "px;" +
+                "padding-right: " + (int) (30 * scalingFactor) + "px;" +
+                "padding-top: " + (int) (20 * scalingFactor) + "px;" +
+                "padding-bottom: " + (int) (20 * scalingFactor) + "px;" +
+                "}" +
+                ".textLine { " +
+                "display:block;" +
+                "overflow:hidden;" +
+                "text-overflow:ellipsis;" +
+                "white-space:nowrap; " +
+                "font-size: " + (int) (28 * scalingFactor) + "px;" +
+                "}" +
+                ".headLine { " +
+                "display:block;" +
+                "overflow:hidden;" +
+                "text-overflow:ellipsis;" +
+                "white-space:nowrap; " +
+                "font-size: " + (int) (38 * scalingFactor) + "px;" +
+                "}" +
+                "</style>" +
+                "</head>" +
+                "<body class=\"body\">" +
+                "<h1 class=\"headLine\">" + "Score : " + String.format("%.2f", (double) playingResult.getScore() / (double) playingResult.getTotalScore() * 100) + " %" + "</h1>" +
+                "<p class=\"textLine\">" + "<b>Great : </b>" + playingResult.getGreatNumber() + "</p>" +
+                "<p class=\"textLine\">" + "<b>Early : </b>" + playingResult.getEarlyNumber() + "</p>" +
+                "<p class=\"textLine\">" + "<b>Late : </b>" + playingResult.getLateNumber() + "</p>" +
+                "<p class=\"textLine\">" + "<b>Miss : </b>" + playingResult.getMissNumber() + "</p>" +
+                "</body>" +
+                "</html>");
+        this.add(finalResultImageLabel, JLayeredPane.POPUP_LAYER);
+        finalResultImageLabel.setVisible(true);
     }
 
     @Override
@@ -277,9 +287,70 @@ public class GamePlayingPane extends JLayeredPane {
             for (LineThread lineThread : lineThreads) {
                 lineExecutorService.execute(lineThread);
             }
-            new ScheduledThreadPoolExecutor(1).schedule(() -> music.play(), startTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+            new ScheduledThreadPoolExecutor(1).schedule(() -> {
+                music.play();
+                try {
+                    Thread.sleep(GameConfig.getStartDelay());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                showFinalResult();
+            }, startTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             initHitResultShowThreads();
             System.out.println(music.getTitle() + " " + music.getVersion());
+        }
+    }
+
+    private class ShowHitResultThread extends Thread {
+        private HitObject hitObject;
+        private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+
+        public ShowHitResultThread(HitObject hitObject) {
+            this.hitObject = hitObject;
+            if (hitObject.getEndTime() != 0) {
+                scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
+            }
+        }
+
+        @Override
+        public void run() {
+            if (hitObject.getEndTime() == 0) {
+                draw();
+            } else {
+                scheduledThreadPoolExecutor.scheduleAtFixedRate(this::draw, 0, 200,
+                        TimeUnit.MILLISECONDS);
+            }
+        }
+
+        private void draw() {
+            if (hitObject.getEndTime() != 0) {
+                long endTime =
+                        GameConfig.getJudgeOffset() + gamePlayingPane.startTime - GameConfig.getHitDelay() + hitObject.getEndTime();
+                if (System.currentTimeMillis() > endTime) {
+                    scheduledThreadPoolExecutor.shutdown();
+                    return;
+                }
+            }
+            int status = playingResult.getHitObjectsStatus(hitObject);
+            if (status == PlayingResult.GREAT) {
+                highLightHitResultLabel.setForeground(new Color(90, 203, 87, 255));
+                highLightHitResultLabel.setText("GREAT");
+            } else if (status == PlayingResult.MISS) {
+                highLightHitResultLabel.setForeground(new Color(203, 87, 87, 255));
+                highLightHitResultLabel.setText("MISS");
+            } else {
+                highLightHitResultLabel.setForeground(new Color(226, 143, 99, 255));
+                highLightHitResultLabel.setText(status == PlayingResult.LATE ? "LATE" : "EARLY");
+            }
+            highLightHitResultLabel.setVisible(true);
+            gamePlayingPane.repaint();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {
+            }
+            highLightHitResultLabel.setVisible(false);
+            scoreBoardLabel.setText(playingResult.getScore() + " / " + playingResult.getTotalScore());
+            gamePlayingPane.repaint();
         }
     }
 

@@ -11,14 +11,14 @@ import java.awt.*;
  * Description here
  *
  * @author .torrent
- * @version 1.0.0 2020/11/28
+ * @version 1.0.0 2020/12/12
  */
-public class LocalGameFrame extends JFrame {
+public class OnlineGameFrame extends JFrame {
     private Container oldPane;
     private Container defaultPane;
     private LauncherFrame launcherFrame;
 
-    public LocalGameFrame(LauncherFrame launcherFrame){
+    public OnlineGameFrame(LauncherFrame launcherFrame){
         super();
         this.setUndecorated(true);
         this.defaultPane=this.getContentPane();

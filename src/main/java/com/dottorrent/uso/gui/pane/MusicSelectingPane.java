@@ -117,6 +117,7 @@ public class MusicSelectingPane extends JLayeredPane {
         this.setPreferredSize(new Dimension((int) (1920 * scalingFactor), (int) (1080 * scalingFactor)));
 
         //---- musicInfoImageLabel ----
+        musicInfoImageLabel.setVisible(false);
         musicInfoImageLabel.setIcon(musicInfoImageIcon);
         musicInfoImageLabel.setSize(musicInfoImageIcon.getIconWidth(), musicInfoImageIcon.getIconHeight());
         musicInfoImageLabel.setPreferredSize(new Dimension(musicInfoImageIcon.getIconWidth(),
@@ -127,7 +128,6 @@ public class MusicSelectingPane extends JLayeredPane {
         musicInfoImageLabel.setVerticalTextPosition(SwingConstants.TOP);
         musicInfoImageLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32*scalingFactor)));
         musicInfoImageLabel.setForeground(new Color(200, 200, 200));
-        musicInfoImageLabel.setVisible(false);
 
         //---- playButton ----
         playButton.setIcon(playButtonImageIcon);

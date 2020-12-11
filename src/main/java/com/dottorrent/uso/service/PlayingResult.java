@@ -2,6 +2,7 @@ package com.dottorrent.uso.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.Consumer;
 
 /**
  * Description here
@@ -54,6 +55,22 @@ public class PlayingResult {
 
     public int getHitObjectsStatus(HitObject hitObject) {
         return hitObjectsStatus.get(hitObjects.indexOf(hitObject));
+    }
+
+    public int getMissNumber(){
+        return (int) hitObjectsStatus.stream().filter(integer -> integer == MISS).count();
+    }
+
+    public int getGreatNumber(){
+        return (int) hitObjectsStatus.stream().filter(integer -> integer == GREAT).count();
+    }
+
+    public int getLateNumber(){
+        return (int) hitObjectsStatus.stream().filter(integer -> integer == LATE).count();
+    }
+
+    public int getEarlyNumber(){
+        return (int) hitObjectsStatus.stream().filter(integer -> integer == EARLY).count();
     }
 
     public void setHitObjectsStatus(HitObject hitObject,int status) {
