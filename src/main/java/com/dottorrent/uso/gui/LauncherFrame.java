@@ -4,6 +4,7 @@
 
 package com.dottorrent.uso.gui;
 
+import com.dottorrent.uso.gui.component.LoginDialog;
 import com.dottorrent.uso.gui.component.QualityButton;
 import com.dottorrent.uso.gui.component.QualityLabel;
 
@@ -180,7 +181,7 @@ public class LauncherFrame extends JFrame {
     }
 
     private void onlineModeButtonMouseClicked(MouseEvent e) {
-        //@TODO 登陆/注册
+        LoginDialog.showLoginDialog(this);
         new OnlineGameFrame(this).enterMusicSelectingPane();
         this.dispose();
     }
