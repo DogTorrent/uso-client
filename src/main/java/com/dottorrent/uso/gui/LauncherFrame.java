@@ -180,6 +180,7 @@ public class LauncherFrame extends JFrame {
     }
 
     private void onlineModeButtonMouseClicked(MouseEvent e) {
+        //@TODO 登陆/注册
         new OnlineGameFrame(this).enterMusicSelectingPane();
         this.dispose();
     }

@@ -2,6 +2,8 @@ package com.dottorrent.uso.service;
 
 
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Description here
@@ -15,9 +17,11 @@ public class GameConfig {
     private static int judgeOffset=80;
     private static int pixelsPerTick =7;
     private static int startDelay=5000;
-    private static int hitBoxShowDelay=250;
+    private static int hitBoxShowDelay=200;
     private static double scalingFactor=0.5;
     private static boolean isHighQuality=true;
+    private static Path localDataDirPath = Path.of("data");
+    private static File localSaveFilename = new File("saves.db");
     private static int[] lineKeyCodes ={KeyEvent.VK_D,KeyEvent.VK_F,KeyEvent.VK_J,KeyEvent.VK_K};
 
     public static int getMillisPerTick() {
@@ -81,6 +85,14 @@ public class GameConfig {
 
     public static void setHitBoxShowDelay(int hitBoxShowDelay) {
         GameConfig.hitBoxShowDelay = hitBoxShowDelay;
+    }
+
+    public static Path getLocalDataDirPath() {
+        return localDataDirPath;
+    }
+
+    public static File getLocalSaveFilename() {
+        return localSaveFilename;
     }
 
     public static int getLineKeyCode(int index) {

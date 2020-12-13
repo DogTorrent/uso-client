@@ -10,11 +10,10 @@ import com.dottorrent.uso.gui.component.QualityButton;
 import com.dottorrent.uso.gui.component.QualityLabel;
 import com.dottorrent.uso.service.GameConfig;
 import com.dottorrent.uso.service.Music;
+import com.dottorrent.uso.service.User;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ScrollBarUI;
 import java.awt.*;
 import java.awt.event.*;
@@ -26,6 +25,7 @@ import java.nio.file.Path;
  * @author Brainrain
  */
 public class MusicSelectingPane extends JLayeredPane {
+    private User user;
     private ImageIcon bgImageIcon;
     private ImageIcon backImageIcon;
     private ImageIcon topBarImageIcon;
@@ -42,11 +42,12 @@ public class MusicSelectingPane extends JLayeredPane {
     private QualityLabel musicInfoImageLabel;
     private QualityButton playButton;
 
-    public MusicSelectingPane() {
-        this(GameConfig.getScalingFactor());
+    public MusicSelectingPane(User user) {
+        this(GameConfig.getScalingFactor(),user);
     }
-    public MusicSelectingPane(double scalingFactor) {
+    public MusicSelectingPane(double scalingFactor,User user) {
         this.scalingFactor = scalingFactor;
+        this.user=user;
 
         //---- bgImageIcon ----
         bgImageIcon = new ImageIcon(getClass().getResource("/pictures/bg.png"));
@@ -56,15 +57,16 @@ public class MusicSelectingPane extends JLayeredPane {
                 Image.SCALE_SMOOTH));
 
         //---- musicInfoImageIcon ----
-        musicInfoImageIcon=new ImageIcon(getClass().getResource("/pictures/music_info.png"));
+        musicInfoImageIcon=new ImageIcon(getClass().getResource("/pictures/popup_label_bg.png"));
         musicInfoImageIcon.setImage(musicInfoImageIcon.getImage().getScaledInstance(
                 (int) (musicInfoImageIcon.getIconWidth() * scalingFactor),
                 (int) (musicInfoImageIcon.getIconHeight() * scalingFactor),
                 Image.SCALE_SMOOTH));
+        musicInfoImageLabel=new QualityLabel();
 
         //---- playButtonImageIcon && playButtonOnMovedIcon ----
         try {
-            BufferedImage playButtonImage = ImageIO.read(getClass().getResource("/pictures/play.png"));
+            BufferedImage playButtonImage = ImageIO.read(getClass().getResource("/pictures/play_round.png"));
             int width=playButtonImage.getWidth()/2;
             int height=playButtonImage.getHeight();
             playButtonImageIcon=new ImageIcon(playButtonImage.getSubimage(0,0,width,height));
@@ -80,6 +82,7 @@ public class MusicSelectingPane extends JLayeredPane {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+        playButton=new QualityButton();
 
         //---- topBarImageIcon && bottomBarImageIcon ----
         try {
@@ -102,11 +105,9 @@ public class MusicSelectingPane extends JLayeredPane {
 
         topBarImageLabel=new QualityLabel();
         bottomBarImageLabel=new QualityLabel();
-        musicInfoImageLabel=new QualityLabel();
         musicListScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         musicList = new MusicList(scalingFactor);
         bgImageLabel = new QualityLabel();
-        playButton=new QualityButton();
         initComponents();
     }
 
@@ -140,7 +141,7 @@ public class MusicSelectingPane extends JLayeredPane {
         playButton.setBorderPainted(false);
         playButton.setVisible(false);
         playButton.addActionListener(e -> {
-            ((LocalGameFrame)(this.getRootPane().getParent())).enterGamePlayingPane((Music) (musicList.getSelectedValue()));
+            ((LocalGameFrame)(this.getRootPane().getParent())).enterGamePlayingPane((Music) (musicList.getSelectedValue()),user);
         });
 
         //---- barImageLabel ----
@@ -149,8 +150,8 @@ public class MusicSelectingPane extends JLayeredPane {
         topBarImageLabel.setBounds(0,0, topBarImageIcon.getIconWidth(), topBarImageIcon.getIconHeight());
         bottomBarImageLabel.setBounds(0,getPreferredSize().height-bottomBarImageIcon.getIconHeight(),
                 bottomBarImageIcon.getIconWidth(), bottomBarImageIcon.getIconHeight());
-        this.add(topBarImageLabel);
-        this.add(bottomBarImageLabel);
+        this.add(topBarImageLabel,JLayeredPane.DEFAULT_LAYER);
+        this.add(bottomBarImageLabel,JLayeredPane.DEFAULT_LAYER);
 
         //======== musicListScrollPane ========
         musicListScrollPane.setViewportView(musicList);
@@ -192,7 +193,7 @@ public class MusicSelectingPane extends JLayeredPane {
                 bgImageMovedWithMouse(e);
             }
         });
-        this.add(bgImageLabel, JLayeredPane.DEFAULT_LAYER);
+        this.add(bgImageLabel, JLayeredPane.FRAME_CONTENT_LAYER);
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
@@ -254,9 +255,9 @@ public class MusicSelectingPane extends JLayeredPane {
                 "<p class=\"textLine\">" + "<b>Difficulty : </b>" + music.getDifficulty() + "</p>" +
                 "</body>" +
                 "</html>");
-        MusicSelectingPane.this.add(musicInfoImageLabel, JLayeredPane.POPUP_LAYER);
+        this.add(musicInfoImageLabel, JLayeredPane.MODAL_LAYER);
         musicInfoImageLabel.setVisible(true);
-        MusicSelectingPane.this.add(playButton, JLayeredPane.POPUP_LAYER);
+        this.add(playButton, JLayeredPane.POPUP_LAYER);
         playButton.setVisible(true);
     }
 
@@ -282,7 +283,7 @@ public class MusicSelectingPane extends JLayeredPane {
 
     public static void main(String[] args) {
         JFrame testFrame = new JFrame();
-        testFrame.getContentPane().add(new MusicSelectingPane(1));
+        testFrame.getContentPane().add(new MusicSelectingPane(1,new User(0,null,null)));
         testFrame.pack();
         testFrame.setVisible(true);
         testFrame.setLocationRelativeTo(null);

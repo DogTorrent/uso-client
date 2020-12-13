@@ -3,6 +3,7 @@ package com.dottorrent.uso.gui;
 import com.dottorrent.uso.gui.pane.GamePlayingPane;
 import com.dottorrent.uso.gui.pane.MusicSelectingPane;
 import com.dottorrent.uso.service.Music;
+import com.dottorrent.uso.service.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,7 +30,7 @@ public class OnlineGameFrame extends JFrame {
             oldPane=this.getContentPane();
             this.setVisible(false);
         }
-        this.setContentPane(new MusicSelectingPane());
+        this.setContentPane(new MusicSelectingPane(new User(0,null,null)));
         if(!this.isVisible()) {
             this.pack();
             this.setLocationRelativeTo(null);
@@ -39,12 +40,12 @@ public class OnlineGameFrame extends JFrame {
         this.repaint();
     }
 
-    public void enterGamePlayingPane(Music music){
+    public void enterGamePlayingPane(Music music, User user){
         if(this.getContentPane()!=defaultPane&&this.getContentPane()!=null) {
             oldPane=this.getContentPane();
             oldPane.setVisible(false);
         }
-        this.setContentPane(new GamePlayingPane(music));
+        this.setContentPane(new GamePlayingPane(music,user));
         if(!this.isVisible()) {
             this.pack();
             this.setLocationRelativeTo(null);

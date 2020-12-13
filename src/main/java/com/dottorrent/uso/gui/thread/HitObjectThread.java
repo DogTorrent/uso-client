@@ -39,11 +39,11 @@ public class HitObjectThread implements Runnable {
     public void run() {
         //提前在画面上初始化key，位置正好在可视区域的上方隐藏区域
         scheduledThreadPoolExecutor = Executors.newSingleThreadScheduledExecutor();
-        gamePlayingPane.add(keyImageLabel, JLayeredPane.getLayer(currentLineLabel));
         keyImageLabel.setBounds((currentLineLabel.getLocation().x + gamePlayingPane.getLineBoldWidth()),
                 gamePlayingPane.getY() - keyImageLabel.getIcon().getIconHeight(),
                 keyImageLabel.getIcon().getIconWidth(),
                 keyImageLabel.getIcon().getIconHeight());
+        gamePlayingPane.add(keyImageLabel, JLayeredPane.DEFAULT_LAYER,0);
             /*
             计算真正的开始动画的时间
             公式含义：

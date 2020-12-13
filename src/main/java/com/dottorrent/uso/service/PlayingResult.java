@@ -1,8 +1,17 @@
 package com.dottorrent.uso.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.function.Consumer;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Description here
@@ -15,12 +24,13 @@ public class PlayingResult {
     private long totalScore;
     private ArrayList<HitObject> hitObjects;
     private ArrayList<Integer> hitObjectsStatus;
+    private Music music;
     public static int MISS=0;
     public static int GREAT=1;
     public static int EARLY=2;
     public static int LATE=3;
 
-    public PlayingResult(ArrayList<HitObject> hitObjects) {
+    public PlayingResult(ArrayList<HitObject> hitObjects,Music music) {
         this.hitObjects=hitObjects;
         this.hitObjectsStatus=new ArrayList<>();
         for(HitObject hitObject:hitObjects){
@@ -31,6 +41,7 @@ public class PlayingResult {
                 totalScore+=2;
             }
         }
+        this.music=music;
     }
 
     public long getScore() {
@@ -81,4 +92,49 @@ public class PlayingResult {
             score+=1;
         }
     }
+
+    public boolean saveLocalResult(User user){
+        Path localDataDirPath=GameConfig.getLocalDataDirPath();
+        //如果data文件夹不存在，就创建该文件夹
+        if(!localDataDirPath.toFile().isDirectory()){
+            try {
+                Files.createDirectories(localDataDirPath);
+            } catch (IOException e) {
+                return false;
+            }
+        }
+
+        Path localSaveFilePath=Path.of(localDataDirPath.toString(),GameConfig.getLocalSaveFilename().toString());
+        try {
+            Class.forName("org.sqlite.JDBC");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:"+localSaveFilePath.toString());
+            Statement statement= connection.createStatement();
+            //如果表不存在，就创造表
+            statement.execute("CREATE TABLE IF NOT EXISTS \"user_"+user.getUserID()+"\" (" +
+                    " \"song_identifier\" TEXT NOT NULL," +
+                    " \"time_cn\" LONG NOT NULL," +
+                    " \"score\" INTEGER NOT NULL," +
+                    " \"great_num\" INTEGER NOT NULL," +
+                    " \"early_num\" INTEGER NOT NULL," +
+                    " \"late_num\" INTEGER NOT NULL," +
+                    " \"miss_num\" INTEGER NOT NULL" +
+                    ");");
+            statement.execute("INSERT INTO user_" + user.getUserID() +
+                    " (song_identifier,time_cn,score,great_num,early_num,late_num,miss_num)" +
+                    " VALUES (" +
+                    " '" + music.getIdentification() + "'," +
+                    " "+ Long.valueOf(new SimpleDateFormat("yyyyMMddHHmm", Locale.CHINA).format(new Date()))+ " ," +
+                    " "+getScore()+ " ," +
+                    " "+getGreatNumber()+ " ," +
+                    " "+getEarlyNumber()+ " ," +
+                    " "+getLateNumber()+ " ," +
+                    " "+getMissNumber()+ " );");
+        }catch (SQLException | ClassNotFoundException e){
+            return false;
+        }
+        return true;
+    }
+
 }
+
+
