@@ -1,16 +1,12 @@
-package com.dottorrent.uso.service;
+package com.dottorrent.uso.client.service;
 
-import com.dottorrent.uso.gui.pane.GamePlayingPane;
+import com.dottorrent.uso.client.gui.pane.GamePlayingPane;
 
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 /**
  * Description here

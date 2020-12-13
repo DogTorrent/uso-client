@@ -1,9 +1,9 @@
-package com.dottorrent.uso.gui;
+package com.dottorrent.uso.client.gui;
 
-import com.dottorrent.uso.gui.pane.GamePlayingPane;
-import com.dottorrent.uso.gui.pane.MusicSelectingPane;
-import com.dottorrent.uso.service.Music;
-import com.dottorrent.uso.service.User;
+import com.dottorrent.uso.client.gui.pane.GamePlayingPane;
+import com.dottorrent.uso.client.gui.pane.MusicSelectingPane;
+import com.dottorrent.uso.client.service.Music;
+import com.dottorrent.uso.client.service.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,25 +12,27 @@ import java.awt.*;
  * Description here
  *
  * @author .torrent
- * @version 1.0.0 2020/12/12
+ * @version 1.0.0 2020/11/28
  */
-public class OnlineGameFrame extends JFrame {
+public class LocalGameFrame extends JFrame {
     private Container oldPane;
     private Container defaultPane;
     private LauncherFrame launcherFrame;
+    private User user;
 
-    public OnlineGameFrame(LauncherFrame launcherFrame){
+    public LocalGameFrame(LauncherFrame launcherFrame){
         super();
         this.setUndecorated(true);
         this.defaultPane=this.getContentPane();
         this.launcherFrame=launcherFrame;
+        this.user=new User(0,null,null);
     }
     public void enterMusicSelectingPane(){
         if(this.getContentPane()!=defaultPane&&this.getContentPane()!=null) {
             oldPane=this.getContentPane();
-            this.setVisible(false);
+            oldPane.setVisible(false);
         }
-        this.setContentPane(new MusicSelectingPane(new User(0,null,null)));
+        this.setContentPane(new MusicSelectingPane(user));
         if(!this.isVisible()) {
             this.pack();
             this.setLocationRelativeTo(null);
@@ -45,7 +47,7 @@ public class OnlineGameFrame extends JFrame {
             oldPane=this.getContentPane();
             oldPane.setVisible(false);
         }
-        this.setContentPane(new GamePlayingPane(music,user));
+        this.setContentPane(new GamePlayingPane(music, user));
         if(!this.isVisible()) {
             this.pack();
             this.setLocationRelativeTo(null);

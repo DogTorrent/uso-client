@@ -1,6 +1,6 @@
-package com.dottorrent.uso.gui.component;
+package com.dottorrent.uso.client.gui.component;
 
-import com.dottorrent.uso.service.GameConfig;
+import com.dottorrent.uso.client.service.GameConfig;
 
 import javax.swing.*;
 import java.awt.*;

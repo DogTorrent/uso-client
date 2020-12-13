@@ -1,4 +1,4 @@
-package com.dottorrent.uso.service;
+package com.dottorrent.uso.client.service;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 /**
  * Description here

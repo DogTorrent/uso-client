@@ -1,6 +1,6 @@
-package com.dottorrent.uso.gui.component;
+package com.dottorrent.uso.client.gui.component;
 
-import com.dottorrent.uso.service.GameConfig;
+import com.dottorrent.uso.client.service.GameConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,16 +9,16 @@ import java.awt.*;
  * Description here
  *
  * @author .torrent
- * @version 1.0.0 2020/11/26
+ * @version 1.0.0 2020/11/27
  */
-public class QualityLabel extends JLabel {
+public class QualityButton extends JButton {
     boolean isHighQuality;
 
-    public QualityLabel(){
+    public QualityButton(){
         this(GameConfig.getHighQuality());
     }
 
-    public QualityLabel(boolean isHighQuality){
+    public QualityButton(boolean isHighQuality){
         this.isHighQuality = isHighQuality;
     }
 

@@ -1,6 +1,5 @@
-package com.dottorrent.uso.service;
+package com.dottorrent.uso.client.service;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 /**

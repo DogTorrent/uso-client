@@ -2,11 +2,11 @@
  * Created by JFormDesigner on Fri Nov 20 23:14:42 CST 2020
  */
 
-package com.dottorrent.uso.gui;
+package com.dottorrent.uso.client.gui;
 
-import com.dottorrent.uso.gui.component.LoginDialog;
-import com.dottorrent.uso.gui.component.QualityButton;
-import com.dottorrent.uso.gui.component.QualityLabel;
+import com.dottorrent.uso.client.gui.component.LoginDialog;
+import com.dottorrent.uso.client.gui.component.QualityButton;
+import com.dottorrent.uso.client.gui.component.QualityLabel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

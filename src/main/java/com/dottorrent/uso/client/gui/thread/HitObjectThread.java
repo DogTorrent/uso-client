@@ -1,9 +1,9 @@
-package com.dottorrent.uso.gui.thread;
+package com.dottorrent.uso.client.gui.thread;
 
-import com.dottorrent.uso.gui.component.QualityLabel;
-import com.dottorrent.uso.gui.pane.GamePlayingPane;
-import com.dottorrent.uso.service.GameConfig;
-import com.dottorrent.uso.service.HitObject;
+import com.dottorrent.uso.client.gui.component.QualityLabel;
+import com.dottorrent.uso.client.gui.pane.GamePlayingPane;
+import com.dottorrent.uso.client.service.GameConfig;
+import com.dottorrent.uso.client.service.HitObject;
 
 import javax.swing.*;
 import java.util.concurrent.Executors;

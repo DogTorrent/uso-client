@@ -1,11 +1,11 @@
-package com.dottorrent.uso.gui.pane;
+package com.dottorrent.uso.client.gui.pane;
 
-import com.dottorrent.uso.gui.LocalGameFrame;
-import com.dottorrent.uso.gui.component.MusicList;
-import com.dottorrent.uso.gui.component.QualityButton;
-import com.dottorrent.uso.gui.component.QualityLabel;
-import com.dottorrent.uso.gui.thread.LineThread;
-import com.dottorrent.uso.service.*;
+import com.dottorrent.uso.client.gui.LocalGameFrame;
+import com.dottorrent.uso.client.gui.component.MusicList;
+import com.dottorrent.uso.client.gui.component.QualityButton;
+import com.dottorrent.uso.client.gui.component.QualityLabel;
+import com.dottorrent.uso.client.gui.thread.LineThread;
+import com.dottorrent.uso.client.service.*;
 import javazoom.jl.decoder.JavaLayerException;
 
 import javax.imageio.ImageIO;

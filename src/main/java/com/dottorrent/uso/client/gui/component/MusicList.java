@@ -1,8 +1,8 @@
-package com.dottorrent.uso.gui.component;
+package com.dottorrent.uso.client.gui.component;
 
-import com.dottorrent.uso.service.GameConfig;
-import com.dottorrent.uso.service.Music;
-import com.dottorrent.uso.service.MusicLoader;
+import com.dottorrent.uso.client.service.GameConfig;
+import com.dottorrent.uso.client.service.Music;
+import com.dottorrent.uso.client.service.MusicLoader;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

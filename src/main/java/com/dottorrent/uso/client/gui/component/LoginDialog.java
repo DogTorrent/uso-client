@@ -2,10 +2,10 @@
  * Created by JFormDesigner on Sun Dec 13 14:50:10 CST 2020
  */
 
-package com.dottorrent.uso.gui.component;
+package com.dottorrent.uso.client.gui.component;
 
-import com.dottorrent.uso.service.GameConfig;
-import com.dottorrent.uso.service.User;
+import com.dottorrent.uso.client.service.GameConfig;
+import com.dottorrent.uso.client.service.User;
 
 import javax.swing.*;
 import java.awt.*;

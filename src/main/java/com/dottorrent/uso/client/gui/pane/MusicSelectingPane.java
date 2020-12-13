@@ -2,15 +2,15 @@
  * Created by JFormDesigner on Thu Nov 26 15:25:41 CST 2020
  */
 
-package com.dottorrent.uso.gui.pane;
+package com.dottorrent.uso.client.gui.pane;
 
-import com.dottorrent.uso.gui.LocalGameFrame;
-import com.dottorrent.uso.gui.component.MusicList;
-import com.dottorrent.uso.gui.component.QualityButton;
-import com.dottorrent.uso.gui.component.QualityLabel;
-import com.dottorrent.uso.service.GameConfig;
-import com.dottorrent.uso.service.Music;
-import com.dottorrent.uso.service.User;
+import com.dottorrent.uso.client.gui.LocalGameFrame;
+import com.dottorrent.uso.client.gui.component.MusicList;
+import com.dottorrent.uso.client.gui.component.QualityButton;
+import com.dottorrent.uso.client.gui.component.QualityLabel;
+import com.dottorrent.uso.client.service.GameConfig;
+import com.dottorrent.uso.client.service.Music;
+import com.dottorrent.uso.client.service.User;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

@@ -1,4 +1,4 @@
-package com.dottorrent.uso.service;
+package com.dottorrent.uso.client.service;
 
 /**
  * Description here
