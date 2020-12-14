@@ -141,7 +141,7 @@ public class MusicSelectingPane extends JLayeredPane {
         playButton.setBorderPainted(false);
         playButton.setVisible(false);
         playButton.addActionListener(e -> {
-            ((LocalGameFrame)(this.getRootPane().getParent())).enterGamePlayingPane((Music) (musicList.getSelectedValue()),user);
+            ((LocalGameFrame)(this.getRootPane().getParent())).enterGamePlayingPane((Music) (musicList.getSelectedValue()));
         });
 
         //---- barImageLabel ----

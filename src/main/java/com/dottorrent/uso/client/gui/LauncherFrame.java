@@ -7,6 +7,7 @@ package com.dottorrent.uso.client.gui;
 import com.dottorrent.uso.client.gui.component.LoginDialog;
 import com.dottorrent.uso.client.gui.component.QualityButton;
 import com.dottorrent.uso.client.gui.component.QualityLabel;
+import com.dottorrent.uso.client.service.User;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -181,9 +182,11 @@ public class LauncherFrame extends JFrame {
     }
 
     private void onlineModeButtonMouseClicked(MouseEvent e) {
-        LoginDialog.showLoginDialog(this);
-        new OnlineGameFrame(this).enterMusicSelectingPane();
-        this.dispose();
+        User user=LoginDialog.showLoginDialog(this);
+        if(user!=null) {
+            new OnlineGameFrame(this,user).enterMusicSelectingPane();
+            this.dispose();
+        }
     }
 
     private void initComponents() {

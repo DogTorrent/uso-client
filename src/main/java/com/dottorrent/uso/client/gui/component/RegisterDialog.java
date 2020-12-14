@@ -5,7 +5,6 @@
 package com.dottorrent.uso.client.gui.component;
 
 import com.dottorrent.uso.client.service.GameConfig;
-import com.dottorrent.uso.client.service.User;
 import com.dottorrent.uso.client.service.UserManager;
 
 import javax.swing.*;
@@ -14,29 +13,30 @@ import java.awt.*;
 /**
  * @author .torrent
  */
-public class LoginDialog extends JDialog {
+public class RegisterDialog extends JDialog {
     double scalingFactor;
-    private User user=null;
+    private boolean ifRegSuccess=false;
     private JLayeredPane dialogPane;
     private JLabel userIDLabel;
     private JTextField userIDField;
+    private JLabel userNameLabel;
+    private JTextField userNameField;
     private JLabel passwordLabel;
     private JPasswordField passwordField;
     private JPanel buttonBar;
-    private QualityButton registerButton;
+    private QualityButton loginButton;
     private JPanel notifyPanel;
     private QualityLabel notifyLabel;
     private QualityButton cancelButton;
-    private QualityButton loginButton;
-
+    private QualityButton registerButton;
     private ImageIcon bgImageIcon;
     private QualityLabel bgImageLabel;
 
-    public LoginDialog(Window owner) {
+    public RegisterDialog(Window owner) {
         this(owner, GameConfig.getScalingFactor());
     }
 
-    public LoginDialog(Window owner, double scalingFactor) {
+    public RegisterDialog(Window owner, double scalingFactor) {
         this.scalingFactor = scalingFactor;
         initComponents();
         initListeners();
@@ -47,7 +47,7 @@ public class LoginDialog extends JDialog {
         tempFrame.setPreferredSize(new Dimension(500, 500));
         tempFrame.setSize(tempFrame.getPreferredSize());
         tempFrame.setVisible(true);
-        System.out.println(LoginDialog.showLoginDialog(tempFrame));
+        System.out.println(RegisterDialog.showRegisterDialog(tempFrame));
 
     }
 
@@ -56,12 +56,14 @@ public class LoginDialog extends JDialog {
         dialogPane = new JLayeredPane();
         userIDLabel = new JLabel();
         userIDField = new JTextField();
+        userNameLabel = new JLabel();
+        userNameField = new JTextField();
         passwordLabel = new JLabel();
         passwordField = new JPasswordField();
         buttonBar = new JPanel();
-        registerButton = new QualityButton();
-        cancelButton = new QualityButton();
         loginButton = new QualityButton();
+        cancelButton = new QualityButton();
+        registerButton = new QualityButton();
         bgImageLabel = new QualityLabel();
         notifyPanel = new JPanel();
         notifyLabel=new QualityLabel();
@@ -92,39 +94,59 @@ public class LoginDialog extends JDialog {
             dialogPane.add(bgImageLabel, JLayeredPane.FRAME_CONTENT_LAYER);
 
             //---- userIDLabel ----
-            userIDLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
+            userIDLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
             userIDLabel.setForeground(Color.WHITE);
             userIDLabel.setText("请输入用户ID");
             userIDLabel.setPreferredSize(new Dimension((int) (dialogPane.getPreferredSize().width - 20 * scalingFactor * 2),
-                    (int) (42 * scalingFactor)));
+                    (int) (32 * scalingFactor)));
             userIDLabel.setSize(userIDLabel.getPreferredSize());
             userIDLabel.setLocation((int) (20 * scalingFactor), (int) (20 * scalingFactor));
             dialogPane.add(userIDLabel, JLayeredPane.DEFAULT_LAYER);
 
             //---- userIDField ----
-            userIDField.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
+            userIDField.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
             userIDField.setPreferredSize(new Dimension((int) (dialogPane.getPreferredSize().width - 20 * scalingFactor * 2),
-                    (int) (64 * scalingFactor)));
+                    (int) (48 * scalingFactor)));
             userIDField.setSize(userIDField.getPreferredSize());
             userIDField.setLocation((int) (20 * scalingFactor),
                     userIDLabel.getY() + userIDLabel.getHeight());
             dialogPane.add(userIDField, JLayeredPane.DEFAULT_LAYER);
 
+            //---- userNameLabel ----
+            userNameLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
+            userNameLabel.setForeground(Color.WHITE);
+            userNameLabel.setText("请输入用户名");
+            userNameLabel.setPreferredSize(new Dimension((int) (dialogPane.getPreferredSize().width - 20 * scalingFactor * 2),
+                    (int) (32 * scalingFactor)));
+            userNameLabel.setSize(userNameLabel.getPreferredSize());
+            userNameLabel.setLocation((int) (20 * scalingFactor),
+                    dialogPane.getPreferredSize().height / 4 + (int) (20 * scalingFactor));
+            dialogPane.add(userNameLabel, JLayeredPane.DEFAULT_LAYER);
+
+            //---- userNameField ----
+            userNameField.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
+            userNameField.setPreferredSize(new Dimension((int) (dialogPane.getPreferredSize().width - 20 * scalingFactor * 2),
+                    (int) (48 * scalingFactor)));
+            userNameField.setSize(userNameField.getPreferredSize());
+            userNameField.setLocation((int) (20 * scalingFactor),
+                    userNameLabel.getY() + userNameLabel.getHeight());
+            dialogPane.add(userNameField, JLayeredPane.DEFAULT_LAYER);
+
             //---- passwordLabel ----
-            passwordLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
+            passwordLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
             passwordLabel.setForeground(Color.WHITE);
             passwordLabel.setText("请输入密码");
             passwordLabel.setPreferredSize(new Dimension((int) (dialogPane.getPreferredSize().width - 20 * scalingFactor * 2),
-                    (int) (42 * scalingFactor)));
+                    (int) (32 * scalingFactor)));
             passwordLabel.setSize(passwordLabel.getPreferredSize());
             passwordLabel.setLocation((int) (20 * scalingFactor),
-                    dialogPane.getPreferredSize().height / 3 + (int) (20 * scalingFactor));
+                    dialogPane.getPreferredSize().height / 2 + (int) (20 * scalingFactor));
             dialogPane.add(passwordLabel, JLayeredPane.DEFAULT_LAYER);
 
             //---- passwordField ----
-            passwordField.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
+            passwordField.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
             passwordField.setPreferredSize(new Dimension((int) (dialogPane.getPreferredSize().width - 20 * scalingFactor * 2),
-                    (int) (64 * scalingFactor)));
+                    (int) (48 * scalingFactor)));
             passwordField.setSize(passwordField.getPreferredSize());
             passwordField.setLocation((int) (20 * scalingFactor),
                     passwordLabel.getY() + passwordLabel.getHeight());
@@ -134,10 +156,10 @@ public class LoginDialog extends JDialog {
             {
                 buttonBar.setLayout(new BoxLayout(buttonBar, BoxLayout.X_AXIS));
 
-                //---- registerButton ----
-                registerButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
-                registerButton.setText("没有账号？注册");
-                buttonBar.add(registerButton);
+                //---- loginButton ----
+                loginButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
+                loginButton.setText("别点我啊！");
+                buttonBar.add(loginButton);
 
                 //---- notifyPanel && notifyLabel ----
                 notifyPanel.setOpaque(false);
@@ -146,18 +168,18 @@ public class LoginDialog extends JDialog {
                 buttonBar.add(notifyPanel);
 
                 //---- cancelButton ----
-                cancelButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
+                cancelButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
                 cancelButton.setText("取消");
                 buttonBar.add(cancelButton);
 
-                //---- okButton ----
-                loginButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
-                loginButton.setText("登陆");
-                buttonBar.add(loginButton);
+                //---- registerButton ----
+                registerButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (24 * scalingFactor)));
+                registerButton.setText("注册");
+                buttonBar.add(registerButton);
             }
             buttonBar.setOpaque(false);
             buttonBar.setPreferredSize(new Dimension((int) (dialogPane.getPreferredSize().width - 20 * scalingFactor * 2),
-                    (int) (64 * scalingFactor)));
+                    (int) (48 * scalingFactor)));
             buttonBar.setSize(buttonBar.getPreferredSize());
             buttonBar.setLocation((int) (20 * scalingFactor),
                     dialogPane.getPreferredSize().height -buttonBar.getPreferredSize().height-(int) (20 * scalingFactor));
@@ -169,34 +191,29 @@ public class LoginDialog extends JDialog {
     }
 
     private void initListeners(){
-        loginButton.addActionListener(e -> {
+        registerButton.addActionListener(e -> {
             String userID= userIDField.getText();
+            String userName=userNameField.getText();
             String password= String.valueOf(passwordField.getPassword());
             if(userID.length()<1||userID.contains(" ")||(!userID.matches("([0-9])+"))||
-                    password.length()<1||password.contains(" ")){
+                    password.length()<1||password.contains(" ")||
+                    userName.length()<1){
                 notifyLabel.setForeground(Color.RED);
                 notifyLabel.setText("输入有误");
             }else {
-                user = UserManager.login(userIDField.getText(), String.valueOf(passwordField.getPassword()));
-                if (user != null) {
+                if (UserManager.register(Long.parseLong(userID), userName,password)) {
+                    ifRegSuccess=true;
                     notifyLabel.setForeground(Color.WHITE);
-                    notifyLabel.setText("登陆成功");
-                    LoginDialog.this.dispose();
-                }else {
-                    notifyLabel.setForeground(Color.RED);
-                    notifyLabel.setText("登陆失败");
+                    notifyLabel.setText("注册成功");
+                    RegisterDialog.this.dispose();
                 }
             }
         });
-        cancelButton.addActionListener(e -> LoginDialog.this.dispose());
-        registerButton.addActionListener(e ->{
-            this.dispose();
-            RegisterDialog.showRegisterDialog(this.getOwner());
-        });
+        cancelButton.addActionListener(e -> RegisterDialog.this.dispose());
     }
-    public static User showLoginDialog(Window owner){
-        LoginDialog loginDialog=new LoginDialog(owner);
-        loginDialog.setVisible(true);
-        return loginDialog.user;
+    public static boolean showRegisterDialog(Window owner){
+        RegisterDialog registerDialog=new RegisterDialog(owner);
+        registerDialog.setVisible(true);
+        return registerDialog.ifRegSuccess;
     }
 }

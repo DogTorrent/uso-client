@@ -18,19 +18,21 @@ public class OnlineGameFrame extends JFrame {
     private Container oldPane;
     private Container defaultPane;
     private LauncherFrame launcherFrame;
+    private User user;
 
-    public OnlineGameFrame(LauncherFrame launcherFrame){
+    public OnlineGameFrame(LauncherFrame launcherFrame,User user){
         super();
         this.setUndecorated(true);
         this.defaultPane=this.getContentPane();
         this.launcherFrame=launcherFrame;
+        this.user=user;
     }
     public void enterMusicSelectingPane(){
         if(this.getContentPane()!=defaultPane&&this.getContentPane()!=null) {
             oldPane=this.getContentPane();
             this.setVisible(false);
         }
-        this.setContentPane(new MusicSelectingPane(new User(0,null,null)));
+        this.setContentPane(new MusicSelectingPane(user));
         if(!this.isVisible()) {
             this.pack();
             this.setLocationRelativeTo(null);
@@ -40,7 +42,7 @@ public class OnlineGameFrame extends JFrame {
         this.repaint();
     }
 
-    public void enterGamePlayingPane(Music music, User user){
+    public void enterGamePlayingPane(Music music){
         if(this.getContentPane()!=defaultPane&&this.getContentPane()!=null) {
             oldPane=this.getContentPane();
             oldPane.setVisible(false);

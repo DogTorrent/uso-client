@@ -3,6 +3,7 @@ package com.dottorrent.uso.client.service;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URI;
 import java.nio.file.Path;
 
 /**
@@ -13,16 +14,18 @@ import java.nio.file.Path;
  */
 public class GameConfig {
     private static int millisPerTick =10;
-    private static int hitDelay=-200;
+    private static int hitDelay=-250;
     private static int judgeOffset=80;
     private static int pixelsPerTick =7;
     private static int startDelay=5000;
-    private static int hitBoxShowDelay=200;
+    private static int hitBoxShowDelay=250;
     private static double scalingFactor=0.5;
     private static boolean isHighQuality=true;
     private static Path localDataDirPath = Path.of("data");
     private static File localSaveFilename = new File("saves.db");
     private static int[] lineKeyCodes ={KeyEvent.VK_D,KeyEvent.VK_F,KeyEvent.VK_J,KeyEvent.VK_K};
+    private static URI userServerUri = URI.create("http://127.0.0.1:14514/uso-server/user");
+    private static URI resultServerUri = URI.create("http://127.0.0.1:14514/uso-server/result");
 
     public static int getMillisPerTick() {
         return millisPerTick;
@@ -97,5 +100,21 @@ public class GameConfig {
 
     public static int getLineKeyCode(int index) {
         return lineKeyCodes[index];
+    }
+
+    public static URI getUserServerUri() {
+        return userServerUri;
+    }
+
+    public static void setUserServerUri(URI userServerUri) {
+        GameConfig.userServerUri = userServerUri;
+    }
+
+    public static URI getResultServerUri() {
+        return resultServerUri;
+    }
+
+    public static void setResultServerUri(URI resultServerUri) {
+        GameConfig.resultServerUri = resultServerUri;
     }
 }

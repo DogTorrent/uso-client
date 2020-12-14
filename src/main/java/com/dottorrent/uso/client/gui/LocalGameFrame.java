@@ -42,7 +42,7 @@ public class LocalGameFrame extends JFrame {
         this.repaint();
     }
 
-    public void enterGamePlayingPane(Music music, User user){
+    public void enterGamePlayingPane(Music music){
         if(this.getContentPane()!=defaultPane&&this.getContentPane()!=null) {
             oldPane=this.getContentPane();
             oldPane.setVisible(false);
