@@ -20,6 +20,6 @@
 线上模式需要服务端，指路<a href="https://github.com/DogTorrent/uso-server">uso-server</a>  
 请查看代码注释和javadoc
 
-#### 3. 指南 
+#### 4. 指南 
 1. 有个p的好指南，直接玩就是了
 2. 别用java写图形
