@@ -17,7 +17,7 @@ public class GameConfig {
     private static int hitDelay=-250;
     private static int judgeOffset=80;
     private static int pixelsPerTick =7;
-    private static int startDelay=5000;
+    private static int startDelay=3000;
     private static int hitBoxShowDelay=250;
     private static double scalingFactor=0.5;
     private static boolean isHighQuality=true;
@@ -26,13 +26,14 @@ public class GameConfig {
     private static int[] lineKeyCodes ={KeyEvent.VK_D,KeyEvent.VK_F,KeyEvent.VK_J,KeyEvent.VK_K};
     private static URI userServerUri = URI.create("http://127.0.0.1:14514/uso-server/user");
     private static URI resultServerUri = URI.create("http://127.0.0.1:14514/uso-server/result");
+    private static URI musicServerUri = URI.create("http://127.0.0.1:14514/uso-server/music");
 
     public static int getMillisPerTick() {
         return millisPerTick;
     }
 
-    public static void setMillisPerTick(int freshRate) {
-        GameConfig.millisPerTick = 1000/freshRate;
+    public static void setMillisPerTick(int millisPerTick) {
+        GameConfig.millisPerTick = millisPerTick;
     }
 
     public static int getHitDelay() {
@@ -116,5 +117,13 @@ public class GameConfig {
 
     public static void setResultServerUri(URI resultServerUri) {
         GameConfig.resultServerUri = resultServerUri;
+    }
+
+    public static URI getMusicServerUri() {
+        return musicServerUri;
+    }
+
+    public static void setMusicServerUri(URI musicServerUri) {
+        GameConfig.musicServerUri = musicServerUri;
     }
 }

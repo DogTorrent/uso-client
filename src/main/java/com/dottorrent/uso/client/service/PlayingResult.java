@@ -21,6 +21,7 @@ import java.util.Locale;
 public class PlayingResult {
     private long score;
     private long totalScore;
+    private long timeInChina;
     private ArrayList<HitObject> hitObjects;
     private ArrayList<Integer> hitObjectsStatus;
     private Music music;
@@ -41,6 +42,7 @@ public class PlayingResult {
             }
         }
         this.music=music;
+        this.timeInChina=0;
     }
 
     public long getScore() {
@@ -92,46 +94,22 @@ public class PlayingResult {
         }
     }
 
-    public boolean saveLocalResult(User user){
-        Path localDataDirPath=GameConfig.getLocalDataDirPath();
-        //如果data文件夹不存在，就创建该文件夹
-        if(!localDataDirPath.toFile().isDirectory()){
-            try {
-                Files.createDirectories(localDataDirPath);
-            } catch (IOException e) {
-                return false;
-            }
-        }
+    public String getMusicIdentifier(){
+        return music.getIdentifier();
+    }
 
-        Path localSaveFilePath=Path.of(localDataDirPath.toString(),GameConfig.getLocalSaveFilename().toString());
-        try {
-            Class.forName("org.sqlite.JDBC");
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:"+localSaveFilePath.toString());
-            Statement statement= connection.createStatement();
-            //如果表不存在，就创造表
-            statement.execute("CREATE TABLE IF NOT EXISTS \"user_"+user.getUserID()+"\" (" +
-                    " \"song_identifier\" TEXT NOT NULL," +
-                    " \"time_cn\" LONG NOT NULL," +
-                    " \"score\" INTEGER NOT NULL," +
-                    " \"great_num\" INTEGER NOT NULL," +
-                    " \"early_num\" INTEGER NOT NULL," +
-                    " \"late_num\" INTEGER NOT NULL," +
-                    " \"miss_num\" INTEGER NOT NULL" +
-                    ");");
-            statement.execute("INSERT INTO user_" + user.getUserID() +
-                    " (song_identifier,time_cn,score,great_num,early_num,late_num,miss_num)" +
-                    " VALUES (" +
-                    " '" + music.getIdentification() + "'," +
-                    " "+ Long.valueOf(new SimpleDateFormat("yyyyMMddHHmm", Locale.CHINA).format(new Date()))+ " ," +
-                    " "+getScore()+ " ," +
-                    " "+getGreatNumber()+ " ," +
-                    " "+getEarlyNumber()+ " ," +
-                    " "+getLateNumber()+ " ," +
-                    " "+getMissNumber()+ " );");
-        }catch (SQLException | ClassNotFoundException e){
-            return false;
+    /**
+     * 设置游戏完成的时间（中国），可以随意重复执行，因为方法内包含判断，实际内容只会执行一次
+     */
+    public void setTimeInChina(){
+        if(timeInChina==0) {
+            this.timeInChina = Long.parseLong(new SimpleDateFormat("yyyyMMddHHmm", Locale.CHINA).format(new Date()));
         }
-        return true;
+    }
+
+    public long getTimeInChina() {
+        setTimeInChina();
+        return timeInChina;
     }
 
 }

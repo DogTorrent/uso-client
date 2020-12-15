@@ -12,10 +12,7 @@ import com.dottorrent.uso.client.service.User;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -147,25 +144,29 @@ public class LauncherFrame extends JFrame {
     }
 
     private void bgImageMovedWithMouse(MouseEvent e) {
-        int moveX = e.getXOnScreen() - this.getLocationOnScreen().x;
-        int moveY = e.getYOnScreen() - this.getLocationOnScreen().y;
-        int redundantX = bgImageIcon.getIconWidth() - this.getWidth();
-        int redundantY = bgImageIcon.getIconHeight() - this.getHeight();
-        float proportionX = (float) redundantX / this.getWidth();
-        float proportionY = (float) redundantY / this.getHeight();
-        int destX = (int) (proportionX * moveX) - redundantX;
-        int destY = (int) (proportionY * moveY) - redundantY;
-        if (destX > 0) {
-            destX = 0;
-        } else if (destX < -redundantX) {
-            destX = -redundantX;
+        try {
+            int moveX = e.getXOnScreen() - this.getLocationOnScreen().x;
+            int moveY = e.getYOnScreen() - this.getLocationOnScreen().y;
+            int redundantX = bgImageIcon.getIconWidth() - this.getWidth();
+            int redundantY = bgImageIcon.getIconHeight() - this.getHeight();
+            float proportionX = (float) redundantX / this.getWidth();
+            float proportionY = (float) redundantY / this.getHeight();
+            int destX = (int) (proportionX * moveX) - redundantX;
+            int destY = (int) (proportionY * moveY) - redundantY;
+            if (destX > 0) {
+                destX = 0;
+            } else if (destX < -redundantX) {
+                destX = -redundantX;
+            }
+            if (destY > 0) {
+                destY = 0;
+            } else if (destY < -redundantY) {
+                destY = -redundantY;
+            }
+            bgImageLabel.setLocation(-redundantX - destX, -redundantY - destY);
+        }catch (IllegalComponentStateException illegalComponentStateException){
+            System.out.println("Launcher is hidden, stop moving background");
         }
-        if (destY > 0) {
-            destY = 0;
-        } else if (destY < -redundantY) {
-            destY = -redundantY;
-        }
-        bgImageLabel.setLocation(-redundantX - destX, -redundantY - destY);
     }
 
     private void componentMouseEntered(MouseEvent e) {
@@ -177,15 +178,15 @@ public class LauncherFrame extends JFrame {
     }
 
     private void localModeButtonMouseClicked(MouseEvent e) {
-        new LocalGameFrame(this).enterMusicSelectingPane();
-        this.dispose();
+        new GameFrame(this).enterMusicSelectingPane();
+        this.setVisible(false);
     }
 
     private void onlineModeButtonMouseClicked(MouseEvent e) {
         User user=LoginDialog.showLoginDialog(this);
-        if(user!=null) {
-            new OnlineGameFrame(this,user).enterMusicSelectingPane();
-            this.dispose();
+        if(user!=null&&user.getUserID()!=0) {
+            new GameFrame(this,user).enterMusicSelectingPane();
+            this.setVisible(false);
         }
     }
 
@@ -244,6 +245,9 @@ public class LauncherFrame extends JFrame {
                 public void mouseMoved(MouseEvent e) {
                     bgImageMovedWithMouse(e);
                 }
+            });
+            settingsButton.addActionListener(e -> {
+                new ConfigSettingFrame().setVisible(true);
             });
             settingsButton.setBounds(getPreferredSize().width - 10 - 32, 10, 32, 32);
             welcomeLayeredPane.add(settingsButton, JLayeredPane.DEFAULT_LAYER);

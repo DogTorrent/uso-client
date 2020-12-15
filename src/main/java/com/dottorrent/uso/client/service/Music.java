@@ -17,7 +17,7 @@ import java.util.List;
  * @version 1.0.0 2020/11/21
  */
 public class Music {
-    private String identification;
+    private String identifier;
     private String title;
     private String artist;
     private String creator;
@@ -29,12 +29,12 @@ public class Music {
     private Path bgImagePath;
     private Player player;
 
-    public String getIdentification() {
-        return identification;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setIdentification(String identification) {
-        this.identification = identification;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getTitle() {
@@ -128,4 +128,9 @@ public class Music {
             e.printStackTrace();
         }
     }
+
+    public void stop() {
+        player.close();
+    }
+
 }

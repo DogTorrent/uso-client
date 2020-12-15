@@ -1,6 +1,6 @@
 package com.dottorrent.uso.client.gui.pane;
 
-import com.dottorrent.uso.client.gui.LocalGameFrame;
+import com.dottorrent.uso.client.gui.GameFrame;
 import com.dottorrent.uso.client.gui.component.MusicList;
 import com.dottorrent.uso.client.gui.component.QualityButton;
 import com.dottorrent.uso.client.gui.component.QualityLabel;
@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -39,11 +40,15 @@ public class GamePlayingPane extends JLayeredPane {
     private ImageIcon backRoundButtonOnMovedImageIcon;
     private ImageIcon saveRoundButtonImageIcon;
     private ImageIcon saveRoundButtonOnMovedImageIcon;
+    public ImageIcon backButtonImageIcon;
+    public ImageIcon backButtonOnMovedImageIcon;
+    public ImageIcon backButtonPressedImageIcon;
     private double scalingFactor;
     private QualityLabel bgImageLabel;
     private QualityLabel finalResultImageLabel;
     private QualityButton backRoundButton;
     private QualityButton saveRoundButton;
+    private QualityButton backButton;
     private QualityLabel[] lineImageLabels;
     private QualityLabel highLightHitResultLabel;
     private ExecutorService lineExecutorService;
@@ -57,20 +62,23 @@ public class GamePlayingPane extends JLayeredPane {
     private int hitAreaY;
     private int lineBoldWidth;
     private ArrayList<HitObject> hitObjects;
+    ScheduledThreadPoolExecutor musicPlayerExecutor;
+    private GameFrame gameFrame;
     /**
      * 音符滑块提前显示的毫秒数，也就是音符滑块从顶部下落到判定线所需要的时间，我们需要提前这么久开始让滑块显示在画面上
      */
     private long keyShowAdvancedMillis;
 
-    public GamePlayingPane(Music music,User user) {
-        this(music, user, GameConfig.getScalingFactor());
+    public GamePlayingPane(Music music,User user,GameFrame gameFrame) {
+        this(music, user, GameConfig.getScalingFactor(),gameFrame);
     }
 
-    public GamePlayingPane(Music music, User user, double scalingFactor) {
+    public GamePlayingPane(Music music, User user, double scalingFactor,GameFrame gameFrame) {
         this.scalingFactor = scalingFactor;
         this.music = music;
         this.user=user;
         this.gamePlayingPane = this;
+        this.gameFrame=gameFrame;
 
         Path imgPath = music.getBgImagePath();
         if (imgPath.toFile().isFile()) {
@@ -132,6 +140,12 @@ public class GamePlayingPane extends JLayeredPane {
         }
         backRoundButton=new QualityButton();
 
+        //---- backButtonImageIcon... ----
+        backButtonImageIcon= ((GameFrame) gameFrame).backButtonImageIcon;
+        backButtonOnMovedImageIcon= ((GameFrame) gameFrame). backButtonOnMovedImageIcon;
+        backButtonPressedImageIcon= ((GameFrame) gameFrame).backButtonPressedImageIcon;
+        backButton=new QualityButton();
+
         //---- saveRoundButtonImageIcon && saveRoundButtonOnMovedImageIcon ----
         try {
             BufferedImage saveRoundButtonImage = ImageIO.read(getClass().getResource("/pictures/save_round.png"));
@@ -167,18 +181,6 @@ public class GamePlayingPane extends JLayeredPane {
         highLightHitResultLabel = new QualityLabel();
         initComponents();
         initThreadPool();
-    }
-
-    public static void main(String[] args) {
-        JFrame testFrame = new JFrame();
-        testFrame.setUndecorated(true);
-        GamePlayingPane gamePlayingPane = new GamePlayingPane(new MusicList().getSpecifiedMusic(0),new User(0,null,
-                null));
-        testFrame.setContentPane(gamePlayingPane);
-        testFrame.pack();
-        testFrame.setVisible(true);
-        testFrame.getContentPane().setVisible(true);
-        testFrame.setLocationRelativeTo(null);
     }
 
     public QualityLabel[] getLineImageLabels() {
@@ -269,7 +271,7 @@ public class GamePlayingPane extends JLayeredPane {
         backRoundButton.setBorderPainted(false);
         backRoundButton.setVisible(false);
         backRoundButton.addActionListener(e -> {
-            ((LocalGameFrame)(this.getRootPane().getParent())).enterMusicSelectingPane();
+            gameFrame.enterMusicSelectingPane();
         });
 
         //---- saveRoundButton ----
@@ -283,12 +285,37 @@ public class GamePlayingPane extends JLayeredPane {
         saveRoundButton.setBorderPainted(false);
         saveRoundButton.setVisible(false);
         saveRoundButton.addActionListener(e -> {
-            playingResult.saveLocalResult(user);
+            if(ScoreManager.saveLocalResult(playingResult,user)){
+                JOptionPane.showMessageDialog(this,"已保存至本地");
+            }
             if(user.getUserID()!=0){
-                //@TODO 保存至网络
+                if(ScoreManager.checkMusicExist(music.getIdentifier(), Duration.ofMillis(300))) {
+                    if (ScoreManager.uploadScore(playingResult, user)) {
+                        JOptionPane.showMessageDialog(this, "已保存至云端");
+                    }
+                }
             }
         });
         finalResultImageLabel.add(saveRoundButton);
+
+        //---- backButton ----
+        backButton.setIcon(backButtonImageIcon);
+        backButton.setRolloverIcon(backButtonOnMovedImageIcon);
+        backButton.setPressedIcon(backButtonPressedImageIcon);
+        backButton.setContentAreaFilled(false);
+        backButton.setBorderPainted(false);
+        backButton.setPreferredSize(new Dimension(backButtonImageIcon.getIconWidth(),
+                backButtonImageIcon.getIconHeight()));
+        backButton.setSize(backButton.getPreferredSize());
+        backButton.setLocation((int)(10*scalingFactor),(int)(10*scalingFactor));
+        backButton.addActionListener(e -> {
+            musicPlayerExecutor.shutdownNow();
+            lineExecutorService.shutdownNow();
+            showHitResultExecutor.shutdownNow();
+            music.stop();
+            gameFrame.enterMusicSelectingPane();
+        });
+        this.add(backButton,JLayeredPane.DEFAULT_LAYER,0);
 
         //---- bgImageLabel ----
         bgImageLabel.setIcon(bgImageIcon);
@@ -298,6 +325,7 @@ public class GamePlayingPane extends JLayeredPane {
     }
 
     private void initThreadPool() {
+        musicPlayerExecutor=new ScheduledThreadPoolExecutor(1);
         lineExecutorService = Executors.newFixedThreadPool(4);
         lineThreads = new LineThread[4];
         showHitResultExecutor = new ScheduledThreadPoolExecutor(20);
@@ -370,7 +398,7 @@ public class GamePlayingPane extends JLayeredPane {
             for (LineThread lineThread : lineThreads) {
                 lineExecutorService.execute(lineThread);
             }
-            new ScheduledThreadPoolExecutor(1).schedule(() -> {
+            musicPlayerExecutor.schedule(() -> {
                 music.play();
                 try {
                     Thread.sleep(GameConfig.getStartDelay());
@@ -435,6 +463,10 @@ public class GamePlayingPane extends JLayeredPane {
             scoreBoardLabel.setText(playingResult.getScore() + " / " + playingResult.getTotalScore());
             gamePlayingPane.repaint();
         }
+    }
+
+    public Music getMusic() {
+        return music;
     }
 
 }

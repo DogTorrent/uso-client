@@ -4,12 +4,13 @@
 
 package com.dottorrent.uso.client.gui.pane;
 
-import com.dottorrent.uso.client.gui.LocalGameFrame;
+import com.dottorrent.uso.client.gui.GameFrame;
 import com.dottorrent.uso.client.gui.component.MusicList;
 import com.dottorrent.uso.client.gui.component.QualityButton;
 import com.dottorrent.uso.client.gui.component.QualityLabel;
 import com.dottorrent.uso.client.service.GameConfig;
 import com.dottorrent.uso.client.service.Music;
+import com.dottorrent.uso.client.service.ScoreManager;
 import com.dottorrent.uso.client.service.User;
 
 import javax.imageio.ImageIO;
@@ -20,6 +21,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 
 /**
  * @author Brainrain
@@ -27,12 +29,14 @@ import java.nio.file.Path;
 public class MusicSelectingPane extends JLayeredPane {
     private User user;
     private ImageIcon bgImageIcon;
-    private ImageIcon backImageIcon;
     private ImageIcon topBarImageIcon;
     private ImageIcon bottomBarImageIcon;
     private ImageIcon musicInfoImageIcon;
     private ImageIcon playButtonImageIcon;
     private ImageIcon playButtonOnMovedIcon;
+    private ImageIcon exitButtonImageIcon;
+    private ImageIcon exitButtonOnMovedImageIcon;
+    private ImageIcon exitButtonPressedImageIcon;
     private double scalingFactor;
     private JScrollPane musicListScrollPane;
     private MusicList musicList;
@@ -41,13 +45,16 @@ public class MusicSelectingPane extends JLayeredPane {
     private QualityLabel bottomBarImageLabel;
     private QualityLabel musicInfoImageLabel;
     private QualityButton playButton;
+    private QualityButton exitButton;
+    private GameFrame gameFrame;
 
-    public MusicSelectingPane(User user) {
-        this(GameConfig.getScalingFactor(),user);
+    public MusicSelectingPane(User user,GameFrame gameFrame) {
+        this(GameConfig.getScalingFactor(),user,gameFrame);
     }
-    public MusicSelectingPane(double scalingFactor,User user) {
+    public MusicSelectingPane(double scalingFactor,User user,GameFrame gameFrame) {
         this.scalingFactor = scalingFactor;
         this.user=user;
+        this.gameFrame=gameFrame;
 
         //---- bgImageIcon ----
         bgImageIcon = new ImageIcon(getClass().getResource("/pictures/bg.png"));
@@ -103,6 +110,12 @@ public class MusicSelectingPane extends JLayeredPane {
             ioException.printStackTrace();
         }
 
+        //---- exitButtonImageIcon... ----
+        exitButtonImageIcon= ((GameFrame) gameFrame).exitButtonImageIcon;
+        exitButtonOnMovedImageIcon= ((GameFrame) MusicSelectingPane.this.gameFrame). exitButtonOnMovedImageIcon;
+        exitButtonPressedImageIcon= ((GameFrame) MusicSelectingPane.this.gameFrame).exitButtonPressedImageIcon;
+
+        exitButton = new QualityButton();
         topBarImageLabel=new QualityLabel();
         bottomBarImageLabel=new QualityLabel();
         musicListScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -141,17 +154,49 @@ public class MusicSelectingPane extends JLayeredPane {
         playButton.setBorderPainted(false);
         playButton.setVisible(false);
         playButton.addActionListener(e -> {
-            ((LocalGameFrame)(this.getRootPane().getParent())).enterGamePlayingPane((Music) (musicList.getSelectedValue()));
+            ((GameFrame) gameFrame).enterGamePlayingPane((Music) (musicList.getSelectedValue()));
         });
 
+        //---- exitButton ----
+        exitButton.setIcon(exitButtonImageIcon);
+        exitButton.setRolloverIcon(exitButtonOnMovedImageIcon);
+        exitButton.setPressedIcon(exitButtonPressedImageIcon);
+        exitButton.setContentAreaFilled(false);
+        exitButton.setBorderPainted(false);
+        exitButton.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                bgImageMovedWithMouse(e);
+            }
+        });
+        exitButton.setPreferredSize(new Dimension(exitButtonImageIcon.getIconWidth(),exitButtonImageIcon.getIconHeight()));
+        exitButton.setSize(exitButton.getPreferredSize());
+        exitButton.setLocation((int)(10*scalingFactor),(int)(10*scalingFactor));
+        exitButton.addActionListener(e -> {
+            ((GameFrame) gameFrame).backToTitle();
+        });
+        this.add(exitButton,JLayeredPane.DEFAULT_LAYER,0);
+
         //---- barImageLabel ----
+        //初始化
         topBarImageLabel.setIcon(topBarImageIcon);
         bottomBarImageLabel.setIcon(bottomBarImageIcon);
         topBarImageLabel.setBounds(0,0, topBarImageIcon.getIconWidth(), topBarImageIcon.getIconHeight());
         bottomBarImageLabel.setBounds(0,getPreferredSize().height-bottomBarImageIcon.getIconHeight(),
                 bottomBarImageIcon.getIconWidth(), bottomBarImageIcon.getIconHeight());
-        this.add(topBarImageLabel,JLayeredPane.DEFAULT_LAYER);
-        this.add(bottomBarImageLabel,JLayeredPane.DEFAULT_LAYER);
+        //样式设定
+        topBarImageLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        topBarImageLabel.setVerticalTextPosition(SwingConstants.CENTER);
+        topBarImageLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32*scalingFactor)));
+        topBarImageLabel.setForeground(new Color(200, 200, 200));
+        showPlayerInfo();
+        bottomBarImageLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        bottomBarImageLabel.setVerticalTextPosition(SwingConstants.CENTER);
+        bottomBarImageLabel.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32*scalingFactor)));
+        bottomBarImageLabel.setForeground(new Color(200, 200, 200));
+        //添加进主面板
+        this.add(topBarImageLabel,JLayeredPane.DEFAULT_LAYER,-1);
+        this.add(bottomBarImageLabel,JLayeredPane.DEFAULT_LAYER,-1);
 
         //======== musicListScrollPane ========
         musicListScrollPane.setViewportView(musicList);
@@ -172,6 +217,7 @@ public class MusicSelectingPane extends JLayeredPane {
             musicList.setCellSize(musicListScrollPane.getPreferredSize().width,0);
             musicList.addListSelectionListener(e -> {
                 showMusicInfo((Music)musicList.getSelectedValue());
+                showHistory((Music)musicList.getSelectedValue());
                 changeBgImage((Music)musicList.getSelectedValue());
             });
         }
@@ -217,6 +263,81 @@ public class MusicSelectingPane extends JLayeredPane {
             destY = -redundantY;
         }
         bgImageLabel.setLocation(-redundantX - destX, -redundantY - destY);
+    }
+
+    private void showPlayerInfo(){
+        String userID= String.valueOf(user.getUserID());
+        String userName=user.getUserName();
+        if(user.getUserID()==0){
+            userName="本地玩家";
+        }
+        topBarImageLabel.setText("<html>" +
+                "<head>" +
+                "<meta charset=\"utf-8\"/>" +
+                "<style type=\"text/css\">" +
+                ".body { " +
+                "width:" + (topBarImageLabel.getWidth()/3) + ";" +
+                "padding-left: " + (topBarImageLabel.getWidth()/3*2) + ";" +
+                "padding-right: " + (int) (30 * scalingFactor) + "px;" +
+                "padding-top: " + (int) (20 * scalingFactor) + "px;" +
+                "padding-bottom: " + (int) (20 * scalingFactor) + "px;" +
+                "}" +
+                ".textLine { " +
+                "display:block;" +
+                "overflow:hidden;" +
+                "text-overflow:ellipsis;" +
+                "white-space:nowrap; " +
+                "font-size: " + (int) (28*scalingFactor) + "px;" +
+                "}" +
+                "</style>" +
+                "</head>" +
+                "<body class=\"body\">" +
+                "<p class=\"textLine\">" + "<b>ID : </b>" + userID + "</p>" +
+                "<p class=\"textLine\">" + "<b>用户名 : </b>" + userName + "</p>" +
+                "</body>" +
+                "</html>");
+    }
+
+    private void showHistory(Music music){
+        String type="本地";
+        String highScore= "0";
+
+        if(user.getUserID()==0){
+            type="本地";
+            highScore= String.valueOf(ScoreManager.getHighScore(String.valueOf(user.getUserID()),
+                    music.getIdentifier(), Duration.ofMillis(500)));
+        }else {
+            if(ScoreManager.checkMusicExist(music.getIdentifier(),Duration.ofMillis(500))){
+                type="同步";
+                highScore= String.valueOf(ScoreManager.getHighScore(String.valueOf(user.getUserID()),
+                        music.getIdentifier(), Duration.ofMillis(500)));
+            }
+        }
+        bottomBarImageLabel.setText("<html>" +
+                "<head>" +
+                "<meta charset=\"utf-8\"/>" +
+                "<style type=\"text/css\">" +
+                ".body { " +
+                "width:" + (bottomBarImageLabel.getWidth()/3) + ";" +
+                "padding-left: " + (int) (30 * scalingFactor) + "px;" +
+                "padding-right: " + (int) (30 * scalingFactor) + "px;" +
+                "padding-top: " + (int) (20 * scalingFactor) + "px;" +
+                "padding-bottom: " + (int) (20 * scalingFactor) + "px;" +
+                "}" +
+                ".textLine { " +
+                "display:block;" +
+                "overflow:hidden;" +
+                "text-overflow:ellipsis;" +
+                "white-space:nowrap; " +
+                "font-size: " + (int) (28*scalingFactor) + "px;" +
+                "}" +
+                "</style>" +
+                "</head>" +
+                "<body class=\"body\">" +
+                "<p class=\"textLine\">" + "<b>最高分 : </b>" + highScore + "</p>" +
+                "<p class=\"textLine\">" + "<b>谱面类型 : </b>" + type + "</p>" +
+                "</body>" +
+                "</html>");
     }
 
     private void showMusicInfo(Music music){
@@ -281,11 +402,4 @@ public class MusicSelectingPane extends JLayeredPane {
         }
     }
 
-    public static void main(String[] args) {
-        JFrame testFrame = new JFrame();
-        testFrame.getContentPane().add(new MusicSelectingPane(1,new User(0,null,null)));
-        testFrame.pack();
-        testFrame.setVisible(true);
-        testFrame.setLocationRelativeTo(null);
-    }
 }

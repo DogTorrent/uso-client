@@ -210,7 +210,7 @@ public class MusicLoader {
                 DigestUtils.sha1Hex(new BufferedInputStream(new FileInputStream(music.getAudioPath().toFile())));
         String cfgFileSha1Hex=
                 DigestUtils.sha1Hex(new BufferedInputStream(new FileInputStream(configFile.toFile())));
-        music.setIdentification(audioFileSha1Hex+cfgFileSha1Hex);
+        music.setIdentifier(audioFileSha1Hex+cfgFileSha1Hex);
     }
 
     private static String[] matchAndSplitBasicConfigs(Path configFile, String subTitle) throws FileNotFoundException{

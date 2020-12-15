@@ -136,7 +136,7 @@ public class LoginDialog extends JDialog {
 
                 //---- registerButton ----
                 registerButton.setFont(new Font("Microsoft YaHei UI", Font.PLAIN, (int) (32 * scalingFactor)));
-                registerButton.setText("没有账号？注册");
+                registerButton.setText("注册");
                 buttonBar.add(registerButton);
 
                 //---- notifyPanel && notifyLabel ----
@@ -195,7 +195,7 @@ public class LoginDialog extends JDialog {
         });
     }
     public static User showLoginDialog(Window owner){
-        LoginDialog loginDialog=new LoginDialog(owner);
+        LoginDialog loginDialog=new LoginDialog(owner,0.5);
         loginDialog.setVisible(true);
         return loginDialog.user;
     }

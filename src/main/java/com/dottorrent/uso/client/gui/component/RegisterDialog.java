@@ -206,13 +206,16 @@ public class RegisterDialog extends JDialog {
                     notifyLabel.setForeground(Color.WHITE);
                     notifyLabel.setText("注册成功");
                     RegisterDialog.this.dispose();
+                }else {
+                    notifyLabel.setForeground(Color.RED);
+                    notifyLabel.setText("注册失败");
                 }
             }
         });
         cancelButton.addActionListener(e -> RegisterDialog.this.dispose());
     }
     public static boolean showRegisterDialog(Window owner){
-        RegisterDialog registerDialog=new RegisterDialog(owner);
+        RegisterDialog registerDialog=new RegisterDialog(owner,0.5);
         registerDialog.setVisible(true);
         return registerDialog.ifRegSuccess;
     }
