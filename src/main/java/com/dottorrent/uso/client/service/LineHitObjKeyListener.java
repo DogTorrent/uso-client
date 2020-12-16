@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Description here
+ * 游戏界面的键盘检测事件，检测键盘输入并判断是否击中、击中时间的偏移，击中后应当获得的分数
  *
  * @author .torrent
  * @version 1.0.0 2020/12/7

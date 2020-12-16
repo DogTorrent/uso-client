@@ -1,17 +1,10 @@
 package com.dottorrent.uso.client.gui.thread;
 
-/**
- * Description here
- *
- * @author .torrent
- * @version 1.0.0 2020/12/8
- */
-
 import com.dottorrent.uso.client.gui.component.QualityLabel;
 import com.dottorrent.uso.client.gui.pane.GamePlayingPane;
 import com.dottorrent.uso.client.service.GameConfig;
-import com.dottorrent.uso.client.service.LineHitObjKeyListener;
 import com.dottorrent.uso.client.service.HitObject;
+import com.dottorrent.uso.client.service.LineHitObjKeyListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,25 +14,31 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 初始化某一滑道内所有绘制滑块和长条的线程 {@link HitObjectThread} 的线程，继承自 {@link Thread}
+ *
+ * @author .torrent
+ * @version 1.0.0 2020/12/8
+ */
 public class LineThread extends Thread {
     public int index;
-    private GamePlayingPane gamePlayingPane;
-    private ArrayList<HitObjectThread> lineHitObjectThreads;
-    private ScheduledExecutorService hitObjectExecutorService;
-    private LineHitObjKeyListener lineHitObjKeyListener;
-    private ImageIcon keyImageIcon;
+    private final GamePlayingPane gamePlayingPane;
+    private final ArrayList<HitObjectThread> lineHitObjectThreads;
+    private final ScheduledExecutorService hitObjectExecutorService;
+    private final LineHitObjKeyListener lineHitObjKeyListener;
+    private final ImageIcon keyImageIcon;
 
-    public LineThread(GamePlayingPane gamePlayingPane,ImageIcon keyImageIcon,int index) {
-        this.gamePlayingPane=gamePlayingPane;
+    public LineThread(GamePlayingPane gamePlayingPane, ImageIcon keyImageIcon, int index) {
+        this.gamePlayingPane = gamePlayingPane;
         this.index = index;
         lineHitObjectThreads = new ArrayList<>();
         hitObjectExecutorService = new ScheduledThreadPoolExecutor(10);
-        lineHitObjKeyListener = new LineHitObjKeyListener(gamePlayingPane,GameConfig.getLineKeyCode(index));
-        this.keyImageIcon=keyImageIcon;
+        lineHitObjKeyListener = new LineHitObjKeyListener(gamePlayingPane, GameConfig.getLineKeyCode(index));
+        this.keyImageIcon = keyImageIcon;
         gamePlayingPane.keyboardFocusManager.addKeyEventPostProcessor(e -> {
-            if(e.getID()==KeyEvent.KEY_PRESSED){
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
                 lineHitObjKeyListener.keyPressed(e);
-            }else if (e.getID()==KeyEvent.KEY_RELEASED) {
+            } else if (e.getID() == KeyEvent.KEY_RELEASED) {
                 lineHitObjKeyListener.keyReleased(e);
             }
             return false;
@@ -61,7 +60,7 @@ public class LineThread extends Thread {
                     )
             );
         }
-        lineHitObjectThreads.add(new HitObjectThread(gamePlayingPane,hitObject, keyImageLabel));
+        lineHitObjectThreads.add(new HitObjectThread(gamePlayingPane, hitObject, keyImageLabel));
         lineHitObjKeyListener.addHitObjects(hitObject);
     }
 

@@ -12,19 +12,24 @@ import com.dottorrent.uso.client.service.User;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
- * @author Brainrain
+ * 启动器界面，继承自 {@link JFrame}
+ *
+ * @author .torrent
  */
 public class LauncherFrame extends JFrame {
     private int mouseClickX;
     private int mouseClickY;
-    private ImageIcon bgImageIcon;
-    private ImageIcon mainLogoImageIcon;
-    private ImageIcon subLogoImageIcon;
+    private final ImageIcon bgImageIcon;
+    private final ImageIcon mainLogoImageIcon;
+    private final ImageIcon subLogoImageIcon;
     private ImageIcon buttonImageIcon;
     private ImageIcon buttonPressedImageIcon;
     private ImageIcon exitButtonImageIcon;
@@ -33,25 +38,18 @@ public class LauncherFrame extends JFrame {
     private ImageIcon settingsButtonImageIcon;
     private ImageIcon settingsButtonOnMovedImageIcon;
     private ImageIcon settingsButtonPressedImageIcon;
-    private double scalingFactor;
-    private JLayeredPane welcomeLayeredPane;
-    private QualityButton exitButton;
-    private QualityButton settingsButton;
-    private QualityButton localModeButton;
-    private QualityButton onlineModeButton;
-    private QualityLabel mainLogoImageLabel;
-    private QualityLabel subLogoImageLabel;
-    private QualityLabel bgImageLabel;
+    private final double scalingFactor;
+    private final JLayeredPane welcomeLayeredPane;
+    private final QualityButton exitButton;
+    private final QualityButton settingsButton;
+    private final QualityButton localModeButton;
+    private final QualityButton onlineModeButton;
+    private final QualityLabel mainLogoImageLabel;
+    private final QualityLabel subLogoImageLabel;
+    private final QualityLabel bgImageLabel;
 
     public LauncherFrame() {
         this(0.5);
-    }
-
-    private void initImageIconSize(ImageIcon imageIcon){
-        imageIcon.setImage(imageIcon.getImage().getScaledInstance(
-                (int) (imageIcon.getIconWidth()*scalingFactor),
-                (int) (imageIcon.getIconHeight()*scalingFactor),
-                Image.SCALE_SMOOTH));
     }
 
     public LauncherFrame(double scalingFactor) {
@@ -61,31 +59,31 @@ public class LauncherFrame extends JFrame {
         subLogoImageIcon = new ImageIcon(getClass().getResource("/pictures/logo_sub.png"));
         try {
             BufferedImage buttonImage = ImageIO.read(getClass().getResource("/pictures/button.png"));
-            int width=buttonImage.getWidth()/2;
-            int height=buttonImage.getHeight();
-            buttonImageIcon=new ImageIcon(buttonImage.getSubimage(0,0,width,height));
-            buttonPressedImageIcon=new ImageIcon(buttonImage.getSubimage(width,0,width,height));
+            int width = buttonImage.getWidth() / 2;
+            int height = buttonImage.getHeight();
+            buttonImageIcon = new ImageIcon(buttonImage.getSubimage(0, 0, width, height));
+            buttonPressedImageIcon = new ImageIcon(buttonImage.getSubimage(width, 0, width, height));
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
         try {
             BufferedImage exitButtonImage = ImageIO.read(getClass().getResource("/pictures/exit.png"));
-            int width=exitButtonImage.getWidth()/3;
-            int height=exitButtonImage.getHeight();
-            exitButtonImageIcon=new ImageIcon(exitButtonImage.getSubimage(0,0,width,height));
-            exitButtonOnMovedImageIcon=new ImageIcon(exitButtonImage.getSubimage(width,0,width,height));
-            exitButtonPressedImageIcon=new ImageIcon(exitButtonImage.getSubimage(width*2,0,width,height));
+            int width = exitButtonImage.getWidth() / 3;
+            int height = exitButtonImage.getHeight();
+            exitButtonImageIcon = new ImageIcon(exitButtonImage.getSubimage(0, 0, width, height));
+            exitButtonOnMovedImageIcon = new ImageIcon(exitButtonImage.getSubimage(width, 0, width, height));
+            exitButtonPressedImageIcon = new ImageIcon(exitButtonImage.getSubimage(width * 2, 0, width, height));
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
         try {
             BufferedImage settingsButtonImage = ImageIO.read(getClass().getResource("/pictures/settings.png"));
-            int width=settingsButtonImage.getWidth()/3;
-            int height=settingsButtonImage.getHeight();
-            settingsButtonImageIcon=new ImageIcon(settingsButtonImage.getSubimage(0,0,width,height));
-            settingsButtonImageIcon=new ImageIcon(settingsButtonImage.getSubimage(0,0,width,height));
-            settingsButtonOnMovedImageIcon=new ImageIcon(settingsButtonImage.getSubimage(width,0,width,height));
-            settingsButtonPressedImageIcon=new ImageIcon(settingsButtonImage.getSubimage(width*2,0,width,height));
+            int width = settingsButtonImage.getWidth() / 3;
+            int height = settingsButtonImage.getHeight();
+            settingsButtonImageIcon = new ImageIcon(settingsButtonImage.getSubimage(0, 0, width, height));
+            settingsButtonImageIcon = new ImageIcon(settingsButtonImage.getSubimage(0, 0, width, height));
+            settingsButtonOnMovedImageIcon = new ImageIcon(settingsButtonImage.getSubimage(width, 0, width, height));
+            settingsButtonPressedImageIcon = new ImageIcon(settingsButtonImage.getSubimage(width * 2, 0, width, height));
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
@@ -94,12 +92,12 @@ public class LauncherFrame extends JFrame {
                 (int) (bgImageIcon.getIconHeight() * scalingFactor + 54),
                 Image.SCALE_SMOOTH));
         mainLogoImageIcon.setImage(mainLogoImageIcon.getImage().getScaledInstance(
-                (int) (mainLogoImageIcon.getIconWidth()),
-                (int) (mainLogoImageIcon.getIconHeight()),
+                mainLogoImageIcon.getIconWidth(),
+                mainLogoImageIcon.getIconHeight(),
                 Image.SCALE_SMOOTH));
         subLogoImageIcon.setImage(subLogoImageIcon.getImage().getScaledInstance(
-                (int) (subLogoImageIcon.getIconWidth()),
-                (int) (subLogoImageIcon.getIconHeight()),
+                subLogoImageIcon.getIconWidth(),
+                subLogoImageIcon.getIconHeight(),
                 Image.SCALE_SMOOTH));
         initImageIconSize(buttonImageIcon);
         initImageIconSize(buttonPressedImageIcon);
@@ -128,21 +126,49 @@ public class LauncherFrame extends JFrame {
         }
     }
 
+    /**
+     * 初始化 ImageIcon 的大小为图片原尺寸 * scalingFactor
+     *
+     * @param imageIcon 要被初始化的 ImageIcon
+     */
+    private void initImageIconSize(ImageIcon imageIcon) {
+        imageIcon.setImage(imageIcon.getImage().getScaledInstance(
+                (int) (imageIcon.getIconWidth() * scalingFactor),
+                (int) (imageIcon.getIconHeight() * scalingFactor),
+                Image.SCALE_SMOOTH));
+    }
+
     private void exitButtonActionPerformed(ActionEvent e) {
         System.exit(0);
     }
 
+
+    /**
+     * 拖动窗口时修改窗口位置。由于窗口设置了undecorated，所以需要自行实现拖动窗口的功能。
+     *
+     * @param e 按键拖动事件
+     */
     private void thisMouseDragged(MouseEvent e) {
         int dragX = e.getXOnScreen();
         int dragY = e.getYOnScreen();
         this.setLocation(dragX - mouseClickX, dragY - mouseClickY);
     }
 
+    /**
+     * 点击窗口时获取窗口位置，配合 {@link #thisMouseDragged} 使用
+     *
+     * @param e 按键点击事件
+     */
     private void thisMousePressed(MouseEvent e) {
         mouseClickX = e.getXOnScreen() - this.getLocation().x;
         mouseClickY = e.getYOnScreen() - this.getLocation().y;
     }
 
+    /**
+     * 背景图片位置随着鼠标移动而移动
+     *
+     * @param e 鼠标移动事件
+     */
     private void bgImageMovedWithMouse(MouseEvent e) {
         try {
             int moveX = e.getXOnScreen() - this.getLocationOnScreen().x;
@@ -164,7 +190,7 @@ public class LauncherFrame extends JFrame {
                 destY = -redundantY;
             }
             bgImageLabel.setLocation(-redundantX - destX, -redundantY - destY);
-        }catch (IllegalComponentStateException illegalComponentStateException){
+        } catch (IllegalComponentStateException illegalComponentStateException) {
             System.out.println("Launcher is hidden, stop moving background");
         }
     }
@@ -182,10 +208,15 @@ public class LauncherFrame extends JFrame {
         this.setVisible(false);
     }
 
+    /**
+     * 进入联机模式的 GameFrame，需要事先登陆
+     *
+     * @param e 点击 {@link #onlineModeButton} 事件
+     */
     private void onlineModeButtonMouseClicked(MouseEvent e) {
-        User user=LoginDialog.showLoginDialog(this);
-        if(user!=null&&user.getUserID()!=0) {
-            new GameFrame(this,user).enterMusicSelectingPane();
+        User user = LoginDialog.showLoginDialog(this);
+        if (user != null && user.getUserID() != 0) {
+            new GameFrame(this, user).enterMusicSelectingPane();
             this.setVisible(false);
         }
     }
@@ -204,8 +235,8 @@ public class LauncherFrame extends JFrame {
             this.setPreferredSize(new Dimension(screenWidth, screenHeight));
             gd.setFullScreenWindow(this);
             bgImageIcon.setImage(bgImageIcon.getImage().getScaledInstance(
-                    getPreferredSize().width +96,
-                    getPreferredSize().height +54,
+                    getPreferredSize().width + 96,
+                    getPreferredSize().height + 54,
                     Image.SCALE_SMOOTH)
             );
         } else {

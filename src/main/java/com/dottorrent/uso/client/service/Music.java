@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Description here
+ * 谱面类，初始化时不会加载任何信息，需要手动调用方法加载。
  *
  * @author .torrent
  * @version 1.0.0 2020/11/21
@@ -82,9 +82,9 @@ public class Music {
     }
 
     public void setHitObjects(List<HitObject> hitObjects) {
-        if(hitObjects instanceof ArrayList){
+        if (hitObjects instanceof ArrayList) {
             this.hitObjects = (ArrayList<HitObject>) hitObjects;
-        }else{
+        } else {
             this.hitObjects = new ArrayList<>(hitObjects);
         }
     }
@@ -114,11 +114,11 @@ public class Music {
     }
 
     public void initAudio() throws FileNotFoundException, JavaLayerException {
-        player=new Player(new BufferedInputStream(new FileInputStream(audioPath.toFile())));
+        player = new Player(new BufferedInputStream(new FileInputStream(audioPath.toFile())));
     }
 
-    public void initHitObjects() throws FileNotFoundException{
-        MusicLoader.loadSongHitObjects(getCfgFilePath(),this);
+    public void initHitObjects() throws FileNotFoundException {
+        MusicLoader.loadSongHitObjects(getCfgFilePath(), this);
     }
 
     public void play() {

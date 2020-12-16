@@ -4,27 +4,55 @@
 
 package com.dottorrent.uso.client.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.net.URI;
-import java.nio.file.Path;
+import com.dottorrent.uso.client.gui.component.QualityLabel;
+import com.dottorrent.uso.client.service.GameConfig;
+
 import javax.swing.*;
-import javax.swing.border.*;
-import com.dottorrent.uso.client.gui.component.*;
-import com.dottorrent.uso.client.service.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.net.URI;
 
 /**
+ * 设置窗口，可以修改游戏设置，继承自 {@link JFrame}
+ *
  * @author .torrent
  */
 public class ConfigSettingFrame extends JFrame {
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    private JLayeredPane dialogPane;
+    private JCheckBox highQualityCheckBox;
+    private JCheckBox fullScreenCheckBox;
+    private JLabel hitDelayLabel;
+    private JFormattedTextField hitDelayTextField;
+    private JLabel hitBoxShowDelayLabel;
+    private JFormattedTextField hitBoxShowDelayTextField;
+    private JLabel millisPerTickLabel;
+    private JFormattedTextField millisPerTickTextField;
+    private JLabel pixelsPerTickLabel;
+    private JFormattedTextField pixelsPerTickTextField;
+    private JLabel userServerUriLabel;
+    private JFormattedTextField userServerUriTextField;
+    private JLabel scoreServerUriLabel;
+    private JFormattedTextField scoreServerUriTextField;
+    private JLabel musicServerUriLabel;
+    private JFormattedTextField musicServerUriTextField;
+    private JButton cancelButton;
+    private JButton confirmButton;
+    private QualityLabel bgLabel;
     public ConfigSettingFrame() {
         initComponents();
+    }
+
+    public static void main(String[] args) {
+        ConfigSettingFrame configSettingFrame = new ConfigSettingFrame();
+        configSettingFrame.setVisible(true);
     }
 
     private void confirmButtonActionPerformed(ActionEvent e) {
         // TODO add your code here
     }
+    // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -74,7 +102,7 @@ public class ConfigSettingFrame extends JFrame {
             fullScreenCheckBox.setFont(new Font("Microsoft YaHei UI", Font.BOLD, 12));
             dialogPane.add(fullScreenCheckBox, JLayeredPane.DEFAULT_LAYER);
             fullScreenCheckBox.setBounds(100, 15, 80, 30);
-            fullScreenCheckBox.setSelected(Toolkit.getDefaultToolkit().getScreenSize().width/1920.0==GameConfig.getScalingFactor());
+            fullScreenCheckBox.setSelected(Toolkit.getDefaultToolkit().getScreenSize().width / 1920.0 == GameConfig.getScalingFactor());
 
             //---- hitDelayLabel ----
             hitDelayLabel.setText("\u6309\u952e\u6ede\u540e\u6beb\u79d2");
@@ -197,16 +225,16 @@ public class ConfigSettingFrame extends JFrame {
             dialogPane.add(confirmButton, JLayeredPane.DEFAULT_LAYER);
             confirmButton.setBounds(new Rectangle(new Point(400, 220), confirmButton.getPreferredSize()));
             confirmButton.addActionListener(e -> {
-                boolean isHighQuality=highQualityCheckBox.isSelected();
-                boolean fullScreen=fullScreenCheckBox.isSelected();
-                double scalingFactor=0.5;
-                if(fullScreen){
-                    scalingFactor=Toolkit.getDefaultToolkit().getScreenSize().width/1920.0;
+                boolean isHighQuality = highQualityCheckBox.isSelected();
+                boolean fullScreen = fullScreenCheckBox.isSelected();
+                double scalingFactor = 0.5;
+                if (fullScreen) {
+                    scalingFactor = Toolkit.getDefaultToolkit().getScreenSize().width / 1920.0;
                 }
                 int millisPerTick = Integer.parseInt(millisPerTickTextField.getText());
-                int hitDelay= Integer.parseInt(hitDelayTextField.getText());
+                int hitDelay = Integer.parseInt(hitDelayTextField.getText());
                 int pixelsPerTick = Integer.parseInt(pixelsPerTickTextField.getText());
-                int hitBoxShowDelay= Integer.parseInt(hitBoxShowDelayTextField.getText());
+                int hitBoxShowDelay = Integer.parseInt(hitBoxShowDelayTextField.getText());
                 URI userServerUri = URI.create(userServerUriTextField.getText());
                 URI resultServerUri = URI.create(scoreServerUriTextField.getText());
                 URI musicServerUri = URI.create(musicServerUriTextField.getText());
@@ -223,46 +251,18 @@ public class ConfigSettingFrame extends JFrame {
             });
 
             //---- bgLabel ----
-            ImageIcon bgImageIcon=new ImageIcon(getClass().getResource("/pictures/popup_label_bg.png"));
-            bgImageIcon.setImage(bgImageIcon.getImage().getScaledInstance(480,270,Image.SCALE_SMOOTH));
+            ImageIcon bgImageIcon = new ImageIcon(getClass().getResource("/pictures/popup_label_bg.png"));
+            bgImageIcon.setImage(bgImageIcon.getImage().getScaledInstance(480, 270, Image.SCALE_SMOOTH));
             bgLabel.setIcon(bgImageIcon);
             dialogPane.add(bgLabel, JLayeredPane.DEFAULT_LAYER);
             bgLabel.setBounds(0, 0, 480, 270);
         }
         setUndecorated(true);
         setContentPane(dialogPane);
-        setBackground(new Color(0,0,0,0));
+        setBackground(new Color(0, 0, 0, 0));
         setSize(480, 270);
 
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
-    }
-
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    private JLayeredPane dialogPane;
-    private JCheckBox highQualityCheckBox;
-    private JCheckBox fullScreenCheckBox;
-    private JLabel hitDelayLabel;
-    private JFormattedTextField hitDelayTextField;
-    private JLabel hitBoxShowDelayLabel;
-    private JFormattedTextField hitBoxShowDelayTextField;
-    private JLabel millisPerTickLabel;
-    private JFormattedTextField millisPerTickTextField;
-    private JLabel pixelsPerTickLabel;
-    private JFormattedTextField pixelsPerTickTextField;
-    private JLabel userServerUriLabel;
-    private JFormattedTextField userServerUriTextField;
-    private JLabel scoreServerUriLabel;
-    private JFormattedTextField scoreServerUriTextField;
-    private JLabel musicServerUriLabel;
-    private JFormattedTextField musicServerUriTextField;
-    private JButton cancelButton;
-    private JButton confirmButton;
-    private QualityLabel bgLabel;
-    // JFormDesigner - End of variables declaration  //GEN-END:variables
-
-    public static void main(String[] args) {
-        ConfigSettingFrame configSettingFrame=new ConfigSettingFrame();
-        configSettingFrame.setVisible(true);
     }
 }

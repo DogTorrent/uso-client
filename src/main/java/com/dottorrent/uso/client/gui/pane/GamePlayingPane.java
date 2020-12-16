@@ -1,11 +1,11 @@
 package com.dottorrent.uso.client.gui.pane;
 
 import com.dottorrent.uso.client.gui.GameFrame;
-import com.dottorrent.uso.client.gui.component.MusicList;
 import com.dottorrent.uso.client.gui.component.QualityButton;
 import com.dottorrent.uso.client.gui.component.QualityLabel;
 import com.dottorrent.uso.client.gui.thread.LineThread;
 import com.dottorrent.uso.client.service.*;
+import com.dottorrent.uso.client.service.manager.ScoreManager;
 import javazoom.jl.decoder.JavaLayerException;
 
 import javax.imageio.ImageIO;
@@ -24,61 +24,65 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Description here
+ * 游戏游玩界面，不是独立窗口，继承自 {@link JLayeredPane}，已经包含了对用户是否为线上模式用户的检测，如果是本地用户则只提供保存至本地数据库的
+ * 功能，线上用户则可以同时保存至本地和云端。
+ * <p>
+ * {@link User#getUserID()} 为 0 则认为是本地用户，否则认为是在线用户
  *
  * @author .torrent
  * @version 1.0.0 2020/11/28
+ * @see JLayeredPane
  */
 public class GamePlayingPane extends JLayeredPane {
-    private User user;
     public KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-    private ImageIcon bgImageIcon;
-    private ImageIcon lineImageIcon;
-    private ImageIcon keyImageIcon;
-    private ImageIcon finalResultImageIcon;
+    public ImageIcon backButtonImageIcon;
+    public ImageIcon backButtonOnMovedImageIcon;
+    public ImageIcon backButtonPressedImageIcon;
+    ScheduledThreadPoolExecutor musicPlayerExecutor;
+    private final User user;
+    private final ImageIcon bgImageIcon;
+    private final ImageIcon lineImageIcon;
+    private final ImageIcon keyImageIcon;
+    private final ImageIcon finalResultImageIcon;
     private ImageIcon backRoundButtonImageIcon;
     private ImageIcon backRoundButtonOnMovedImageIcon;
     private ImageIcon saveRoundButtonImageIcon;
     private ImageIcon saveRoundButtonOnMovedImageIcon;
-    public ImageIcon backButtonImageIcon;
-    public ImageIcon backButtonOnMovedImageIcon;
-    public ImageIcon backButtonPressedImageIcon;
-    private double scalingFactor;
-    private QualityLabel bgImageLabel;
-    private QualityLabel finalResultImageLabel;
-    private QualityButton backRoundButton;
-    private QualityButton saveRoundButton;
-    private QualityButton backButton;
-    private QualityLabel[] lineImageLabels;
+    private final double scalingFactor;
+    private final QualityLabel bgImageLabel;
+    private final QualityLabel finalResultImageLabel;
+    private final QualityButton backRoundButton;
+    private final QualityButton saveRoundButton;
+    private final QualityButton backButton;
+    private final QualityLabel[] lineImageLabels;
     private QualityLabel highLightHitResultLabel;
     private ExecutorService lineExecutorService;
     private ScheduledThreadPoolExecutor showHitResultExecutor;
     private PlayingResult playingResult;
     private LineThread[] lineThreads;
-    private Music music;
+    private final Music music;
     private long startTime;
-    private GamePlayingPane gamePlayingPane;
+    private final GamePlayingPane gamePlayingPane;
     private QualityLabel scoreBoardLabel;
-    private int hitAreaY;
-    private int lineBoldWidth;
+    private final int hitAreaY;
+    private final int lineBoldWidth;
     private ArrayList<HitObject> hitObjects;
-    ScheduledThreadPoolExecutor musicPlayerExecutor;
-    private GameFrame gameFrame;
+    private final GameFrame gameFrame;
     /**
      * 音符滑块提前显示的毫秒数，也就是音符滑块从顶部下落到判定线所需要的时间，我们需要提前这么久开始让滑块显示在画面上
      */
-    private long keyShowAdvancedMillis;
+    private final long keyShowAdvancedMillis;
 
-    public GamePlayingPane(Music music,User user,GameFrame gameFrame) {
-        this(music, user, GameConfig.getScalingFactor(),gameFrame);
+    public GamePlayingPane(Music music, User user, GameFrame gameFrame) {
+        this(music, user, GameConfig.getScalingFactor(), gameFrame);
     }
 
-    public GamePlayingPane(Music music, User user, double scalingFactor,GameFrame gameFrame) {
+    public GamePlayingPane(Music music, User user, double scalingFactor, GameFrame gameFrame) {
         this.scalingFactor = scalingFactor;
         this.music = music;
-        this.user=user;
+        this.user = user;
         this.gamePlayingPane = this;
-        this.gameFrame=gameFrame;
+        this.gameFrame = gameFrame;
 
         Path imgPath = music.getBgImagePath();
         if (imgPath.toFile().isFile()) {
@@ -123,14 +127,14 @@ public class GamePlayingPane extends JLayeredPane {
         //---- backRoundButtonImageIcon && backRoundButtonOnMovedImageIcon ----
         try {
             BufferedImage backRoundButtonImage = ImageIO.read(getClass().getResource("/pictures/back_round.png"));
-            int width=backRoundButtonImage.getWidth()/2;
-            int height=backRoundButtonImage.getHeight();
-            backRoundButtonImageIcon=new ImageIcon(backRoundButtonImage.getSubimage(0,0,width,height));
+            int width = backRoundButtonImage.getWidth() / 2;
+            int height = backRoundButtonImage.getHeight();
+            backRoundButtonImageIcon = new ImageIcon(backRoundButtonImage.getSubimage(0, 0, width, height));
             backRoundButtonImageIcon.setImage(backRoundButtonImageIcon.getImage().getScaledInstance(
                     (int) (backRoundButtonImageIcon.getIconWidth() * scalingFactor),
                     (int) (backRoundButtonImageIcon.getIconHeight() * scalingFactor),
                     Image.SCALE_SMOOTH));
-            backRoundButtonOnMovedImageIcon=new ImageIcon(backRoundButtonImage.getSubimage(width,0,width,height));
+            backRoundButtonOnMovedImageIcon = new ImageIcon(backRoundButtonImage.getSubimage(width, 0, width, height));
             backRoundButtonOnMovedImageIcon.setImage(backRoundButtonOnMovedImageIcon.getImage().getScaledInstance(
                     (int) (backRoundButtonOnMovedImageIcon.getIconWidth() * scalingFactor),
                     (int) (backRoundButtonOnMovedImageIcon.getIconHeight() * scalingFactor),
@@ -138,25 +142,25 @@ public class GamePlayingPane extends JLayeredPane {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        backRoundButton=new QualityButton();
+        backRoundButton = new QualityButton();
 
         //---- backButtonImageIcon... ----
-        backButtonImageIcon= ((GameFrame) gameFrame).backButtonImageIcon;
-        backButtonOnMovedImageIcon= ((GameFrame) gameFrame). backButtonOnMovedImageIcon;
-        backButtonPressedImageIcon= ((GameFrame) gameFrame).backButtonPressedImageIcon;
-        backButton=new QualityButton();
+        backButtonImageIcon = gameFrame.backButtonImageIcon;
+        backButtonOnMovedImageIcon = gameFrame.backButtonOnMovedImageIcon;
+        backButtonPressedImageIcon = gameFrame.backButtonPressedImageIcon;
+        backButton = new QualityButton();
 
         //---- saveRoundButtonImageIcon && saveRoundButtonOnMovedImageIcon ----
         try {
             BufferedImage saveRoundButtonImage = ImageIO.read(getClass().getResource("/pictures/save_round.png"));
-            int width=saveRoundButtonImage.getWidth()/2;
-            int height=saveRoundButtonImage.getHeight();
-            saveRoundButtonImageIcon=new ImageIcon(saveRoundButtonImage.getSubimage(0,0,width,height));
+            int width = saveRoundButtonImage.getWidth() / 2;
+            int height = saveRoundButtonImage.getHeight();
+            saveRoundButtonImageIcon = new ImageIcon(saveRoundButtonImage.getSubimage(0, 0, width, height));
             saveRoundButtonImageIcon.setImage(saveRoundButtonImageIcon.getImage().getScaledInstance(
                     (int) (saveRoundButtonImageIcon.getIconWidth() * scalingFactor),
                     (int) (saveRoundButtonImageIcon.getIconHeight() * scalingFactor),
                     Image.SCALE_SMOOTH));
-            saveRoundButtonOnMovedImageIcon=new ImageIcon(saveRoundButtonImage.getSubimage(width,0,width,height));
+            saveRoundButtonOnMovedImageIcon = new ImageIcon(saveRoundButtonImage.getSubimage(width, 0, width, height));
             saveRoundButtonOnMovedImageIcon.setImage(saveRoundButtonOnMovedImageIcon.getImage().getScaledInstance(
                     (int) (saveRoundButtonOnMovedImageIcon.getIconWidth() * scalingFactor),
                     (int) (saveRoundButtonOnMovedImageIcon.getIconHeight() * scalingFactor),
@@ -164,7 +168,7 @@ public class GamePlayingPane extends JLayeredPane {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
-        saveRoundButton=new QualityButton();
+        saveRoundButton = new QualityButton();
 
         try {
             music.initHitObjects();
@@ -176,7 +180,7 @@ public class GamePlayingPane extends JLayeredPane {
             e.printStackTrace();
         }
         hitObjects = (ArrayList<HitObject>) music.getHitObjects();
-        playingResult = new PlayingResult(hitObjects,music);
+        playingResult = new PlayingResult(hitObjects, music);
         scoreBoardLabel = new QualityLabel();
         highLightHitResultLabel = new QualityLabel();
         initComponents();
@@ -213,8 +217,8 @@ public class GamePlayingPane extends JLayeredPane {
         if (screenWidth <= getPreferredSize().width || screenHeight <= getPreferredSize().height) {
             this.setPreferredSize(new Dimension(screenWidth, screenHeight));
             bgImageIcon.setImage(bgImageIcon.getImage().getScaledInstance(
-                    (int) (getPreferredSize().width + 96),
-                    (int) (getPreferredSize().height + 54),
+                    getPreferredSize().width + 96,
+                    getPreferredSize().height + 54,
                     Image.SCALE_SMOOTH)
             );
         }
@@ -245,7 +249,7 @@ public class GamePlayingPane extends JLayeredPane {
         scoreBoardLabel.setVerticalAlignment(SwingConstants.CENTER);
         scoreBoardLabel.setLocation(this.getPreferredSize().width - scoreBoardLabel.getWidth() - (int) (20 * scalingFactor),
                 (int) (20 * scalingFactor));
-        this.add(scoreBoardLabel,JLayeredPane.MODAL_LAYER);
+        this.add(scoreBoardLabel, JLayeredPane.MODAL_LAYER);
 
         //---- finalResultImageLabel ----
         finalResultImageLabel.setVisible(false);
@@ -263,8 +267,8 @@ public class GamePlayingPane extends JLayeredPane {
         //---- backRoundButton ----
         backRoundButton.setIcon(backRoundButtonImageIcon);
         backRoundButton.setRolloverIcon(backRoundButtonOnMovedImageIcon);
-        backRoundButton.setBounds((int) (finalResultImageLabel.getX()+finalResultImageIcon.getIconWidth()-backRoundButtonImageIcon.getIconWidth()/2-10*scalingFactor),
-                (int) (finalResultImageLabel.getY()+finalResultImageIcon.getIconHeight()-backRoundButtonImageIcon.getIconHeight()/2-10*scalingFactor),
+        backRoundButton.setBounds((int) (finalResultImageLabel.getX() + finalResultImageIcon.getIconWidth() - backRoundButtonImageIcon.getIconWidth() / 2 - 10 * scalingFactor),
+                (int) (finalResultImageLabel.getY() + finalResultImageIcon.getIconHeight() - backRoundButtonImageIcon.getIconHeight() / 2 - 10 * scalingFactor),
                 backRoundButtonImageIcon.getIconWidth(),
                 backRoundButtonImageIcon.getIconHeight());
         backRoundButton.setContentAreaFilled(false);
@@ -277,19 +281,19 @@ public class GamePlayingPane extends JLayeredPane {
         //---- saveRoundButton ----
         saveRoundButton.setIcon(saveRoundButtonImageIcon);
         saveRoundButton.setRolloverIcon(saveRoundButtonOnMovedImageIcon);
-        saveRoundButton.setBounds((int) (finalResultImageLabel.getX()+finalResultImageIcon.getIconWidth()-saveRoundButtonImageIcon.getIconWidth()/2*3-10*scalingFactor*2),
-                (int) (finalResultImageLabel.getY()+finalResultImageIcon.getIconHeight()-saveRoundButtonImageIcon.getIconHeight()/2-10*scalingFactor),
+        saveRoundButton.setBounds((int) (finalResultImageLabel.getX() + finalResultImageIcon.getIconWidth() - saveRoundButtonImageIcon.getIconWidth() / 2 * 3 - 10 * scalingFactor * 2),
+                (int) (finalResultImageLabel.getY() + finalResultImageIcon.getIconHeight() - saveRoundButtonImageIcon.getIconHeight() / 2 - 10 * scalingFactor),
                 saveRoundButtonImageIcon.getIconWidth(),
                 saveRoundButtonImageIcon.getIconHeight());
         saveRoundButton.setContentAreaFilled(false);
         saveRoundButton.setBorderPainted(false);
         saveRoundButton.setVisible(false);
         saveRoundButton.addActionListener(e -> {
-            if(ScoreManager.saveLocalResult(playingResult,user)){
-                JOptionPane.showMessageDialog(this,"已保存至本地");
+            if (ScoreManager.saveLocalResult(playingResult, user)) {
+                JOptionPane.showMessageDialog(this, "已保存至本地");
             }
-            if(user.getUserID()!=0){
-                if(ScoreManager.checkMusicExist(music.getIdentifier(), Duration.ofMillis(300))) {
+            if (user.getUserID() != 0) {
+                if (ScoreManager.checkMusicExist(music.getIdentifier(), Duration.ofMillis(300))) {
                     if (ScoreManager.uploadScore(playingResult, user)) {
                         JOptionPane.showMessageDialog(this, "已保存至云端");
                     }
@@ -307,7 +311,7 @@ public class GamePlayingPane extends JLayeredPane {
         backButton.setPreferredSize(new Dimension(backButtonImageIcon.getIconWidth(),
                 backButtonImageIcon.getIconHeight()));
         backButton.setSize(backButton.getPreferredSize());
-        backButton.setLocation((int)(10*scalingFactor),(int)(10*scalingFactor));
+        backButton.setLocation((int) (10 * scalingFactor), (int) (10 * scalingFactor));
         backButton.addActionListener(e -> {
             musicPlayerExecutor.shutdownNow();
             lineExecutorService.shutdownNow();
@@ -315,7 +319,7 @@ public class GamePlayingPane extends JLayeredPane {
             music.stop();
             gameFrame.enterMusicSelectingPane();
         });
-        this.add(backButton,JLayeredPane.DEFAULT_LAYER,0);
+        this.add(backButton, JLayeredPane.DEFAULT_LAYER, 0);
 
         //---- bgImageLabel ----
         bgImageLabel.setIcon(bgImageIcon);
@@ -324,8 +328,12 @@ public class GamePlayingPane extends JLayeredPane {
         this.add(bgImageLabel, JLayeredPane.FRAME_CONTENT_LAYER);
     }
 
+
+    /**
+     * 初始化线程池
+     */
     private void initThreadPool() {
-        musicPlayerExecutor=new ScheduledThreadPoolExecutor(1);
+        musicPlayerExecutor = new ScheduledThreadPoolExecutor(1);
         lineExecutorService = Executors.newFixedThreadPool(4);
         lineThreads = new LineThread[4];
         showHitResultExecutor = new ScheduledThreadPoolExecutor(20);
@@ -338,6 +346,9 @@ public class GamePlayingPane extends JLayeredPane {
         }
     }
 
+    /**
+     * 初始化显示打击信息（GREAT,EARLY,LATE,MISS）的线程.
+     */
     public void initHitResultShowThreads() {
         for (HitObject hitObject : hitObjects) {
             showHitResultExecutor.schedule(new ShowHitResultThread(hitObject),
@@ -346,6 +357,9 @@ public class GamePlayingPane extends JLayeredPane {
         }
     }
 
+    /**
+     * 显示最终游玩结果，并提供保存和返回按钮
+     */
     private void showFinalResult() {
         finalResultImageLabel.setText("<html>" +
                 "<head>" +
@@ -382,11 +396,11 @@ public class GamePlayingPane extends JLayeredPane {
                 "<p class=\"textLine\">" + "<b>Miss : </b>" + playingResult.getMissNumber() + "</p>" +
                 "</body>" +
                 "</html>");
-        this.add(finalResultImageLabel, JLayeredPane.MODAL_LAYER,-1);
+        this.add(finalResultImageLabel, JLayeredPane.MODAL_LAYER, -1);
         finalResultImageLabel.setVisible(true);
-        this.add(backRoundButton, JLayeredPane.MODAL_LAYER,0);
+        this.add(backRoundButton, JLayeredPane.MODAL_LAYER, 0);
         backRoundButton.setVisible(true);
-        this.add(saveRoundButton, JLayeredPane.MODAL_LAYER,0);
+        this.add(saveRoundButton, JLayeredPane.MODAL_LAYER, 0);
         saveRoundButton.setVisible(true);
     }
 
@@ -412,8 +426,15 @@ public class GamePlayingPane extends JLayeredPane {
         }
     }
 
+    public Music getMusic() {
+        return music;
+    }
+
+    /**
+     * 显示打击信息（GREAT,EARLY,LATE,MISS）的内部类，继承自 {@link Thread}，支持长条和短键
+     */
     private class ShowHitResultThread extends Thread {
-        private HitObject hitObject;
+        private final HitObject hitObject;
         private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
         public ShowHitResultThread(HitObject hitObject) {
@@ -456,6 +477,7 @@ public class GamePlayingPane extends JLayeredPane {
             highLightHitResultLabel.setVisible(true);
             gamePlayingPane.repaint();
             try {
+                //停留100ms后再消失
                 Thread.sleep(100);
             } catch (InterruptedException ignored) {
             }
@@ -463,10 +485,6 @@ public class GamePlayingPane extends JLayeredPane {
             scoreBoardLabel.setText(playingResult.getScore() + " / " + playingResult.getTotalScore());
             gamePlayingPane.repaint();
         }
-    }
-
-    public Music getMusic() {
-        return music;
     }
 
 }

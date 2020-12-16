@@ -6,17 +6,20 @@ package com.dottorrent.uso.client.gui.component;
 
 import com.dottorrent.uso.client.service.GameConfig;
 import com.dottorrent.uso.client.service.User;
-import com.dottorrent.uso.client.service.UserManager;
+import com.dottorrent.uso.client.service.manager.UserManager;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
+ * 登录弹窗，继承了 {@link JDialog}，提供跳转到注册弹窗 {@link RegisterDialog} 的按钮
+ *
  * @author .torrent
+ * @see java.awt.Dialog
  */
 public class LoginDialog extends JDialog {
     double scalingFactor;
-    private User user=null;
+    private User user = null;
     private JLayeredPane dialogPane;
     private JLabel userIDLabel;
     private JTextField userIDField;
@@ -28,14 +31,27 @@ public class LoginDialog extends JDialog {
     private QualityLabel notifyLabel;
     private QualityButton cancelButton;
     private QualityButton loginButton;
-
     private ImageIcon bgImageIcon;
     private QualityLabel bgImageLabel;
 
+    /**
+     * 初始化登录界面，只初始化不会显示，需要进一步调用 {@link #setVisible(boolean)} 方法才能显示并阻塞.
+     * <p>
+     * 不带缩放比例参数，会默认调用 {@link GameConfig#getScalingFactor()} 方法
+     *
+     * @param owner 所属窗口
+     * @see #LoginDialog(Window, double)
+     */
     public LoginDialog(Window owner) {
         this(owner, GameConfig.getScalingFactor());
     }
 
+    /**
+     * 初始化登录界面，只初始化不会显示，需要进一步调用 {@link #setVisible(boolean)} 方法才能显示并阻塞.
+     *
+     * @param owner         所属窗口
+     * @param scalingFactor 缩放参数
+     */
     public LoginDialog(Window owner, double scalingFactor) {
         this.scalingFactor = scalingFactor;
         initComponents();
@@ -51,6 +67,21 @@ public class LoginDialog extends JDialog {
 
     }
 
+    /**
+     * 显示一个登录窗口并通过 {@link #setModal(boolean)} 方法阻塞
+     *
+     * @param owner 所属窗口
+     * @return 返回获取到的用户类，如果登陆失败则会返回 null
+     */
+    public static User showLoginDialog(Window owner) {
+        LoginDialog loginDialog = new LoginDialog(owner, 0.5);
+        loginDialog.setVisible(true);
+        return loginDialog.user;
+    }
+
+    /**
+     * 初始化组件
+     */
     private void initComponents() {
 
         dialogPane = new JLayeredPane();
@@ -64,7 +95,7 @@ public class LoginDialog extends JDialog {
         loginButton = new QualityButton();
         bgImageLabel = new QualityLabel();
         notifyPanel = new JPanel();
-        notifyLabel=new QualityLabel();
+        notifyLabel = new QualityLabel();
 
         //---- bgImageIcon && bgImageLabel ----
         bgImageIcon = new ImageIcon(getClass().getResource("/pictures/popup_label_bg.png"));
@@ -81,7 +112,7 @@ public class LoginDialog extends JDialog {
         setModal(true);
         setUndecorated(true);
         setResizable(false);
-        setBackground(new Color(0,0,0,0));
+        setBackground(new Color(0, 0, 0, 0));
         setPreferredSize(bgImageLabel.getPreferredSize());
         setSize(getPreferredSize());
 
@@ -160,7 +191,7 @@ public class LoginDialog extends JDialog {
                     (int) (64 * scalingFactor)));
             buttonBar.setSize(buttonBar.getPreferredSize());
             buttonBar.setLocation((int) (20 * scalingFactor),
-                    dialogPane.getPreferredSize().height -buttonBar.getPreferredSize().height-(int) (20 * scalingFactor));
+                    dialogPane.getPreferredSize().height - buttonBar.getPreferredSize().height - (int) (20 * scalingFactor));
             dialogPane.add(buttonBar, JLayeredPane.DEFAULT_LAYER);
         }
         this.setContentPane(dialogPane);
@@ -168,35 +199,39 @@ public class LoginDialog extends JDialog {
         setLocationRelativeTo(getOwner());
     }
 
-    private void initListeners(){
+    /**
+     * 初始化 listener
+     */
+    private void initListeners() {
         loginButton.addActionListener(e -> {
-            String userID= userIDField.getText();
-            String password= String.valueOf(passwordField.getPassword());
-            if(userID.length()<1||userID.contains(" ")||(!userID.matches("([0-9])+"))||
-                    password.length()<1||password.contains(" ")){
+            String userID = userIDField.getText();
+            String password = String.valueOf(passwordField.getPassword());
+            //目前只支持数字ID，在这里做一个正则判断
+            //@TODO 修改数据库代码、服务端代码和网络通信相关的代码以支持其他形式的ID
+            //@TODO 文字字号略小，后期做一个自适应字号
+            if (userID.length() < 1 || userID.contains(" ") || (!userID.matches("([0-9])+")) ||
+                    password.length() < 1 || password.contains(" ")) {
                 notifyLabel.setForeground(Color.RED);
                 notifyLabel.setText("输入有误");
-            }else {
+            } else {
+                //调用UserManager的login方法，尝试网络登录
+                //@TODO 超时判断和登陆中的动画
                 user = UserManager.login(userIDField.getText(), String.valueOf(passwordField.getPassword()));
                 if (user != null) {
                     notifyLabel.setForeground(Color.WHITE);
                     notifyLabel.setText("登陆成功");
                     LoginDialog.this.dispose();
-                }else {
+                } else {
                     notifyLabel.setForeground(Color.RED);
                     notifyLabel.setText("登陆失败");
                 }
             }
         });
         cancelButton.addActionListener(e -> LoginDialog.this.dispose());
-        registerButton.addActionListener(e ->{
+        //点击跳转到注册弹窗
+        registerButton.addActionListener(e -> {
             this.dispose();
             RegisterDialog.showRegisterDialog(this.getOwner());
         });
-    }
-    public static User showLoginDialog(Window owner){
-        LoginDialog loginDialog=new LoginDialog(owner,0.5);
-        loginDialog.setVisible(true);
-        return loginDialog.user;
     }
 }

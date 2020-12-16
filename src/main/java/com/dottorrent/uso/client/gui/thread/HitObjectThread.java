@@ -11,21 +11,21 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Description here
+ * 绘制滑块和长条的 runnable 类，实现了 {@link Runnable}
  *
  * @author .torrent
  * @version 1.0.0 2020/12/8
  */
 public class HitObjectThread implements Runnable {
-    private GamePlayingPane gamePlayingPane;
-    private HitObject hitObject;
-    private QualityLabel keyImageLabel;
-    private QualityLabel currentLineLabel;
+    private final GamePlayingPane gamePlayingPane;
+    private final HitObject hitObject;
+    private final QualityLabel keyImageLabel;
+    private final QualityLabel currentLineLabel;
     private ScheduledExecutorService scheduledThreadPoolExecutor;
 
 
-    public HitObjectThread(GamePlayingPane gamePlayingPane,HitObject hitObject, QualityLabel keyImageLabel) {
-        this.gamePlayingPane=gamePlayingPane;
+    public HitObjectThread(GamePlayingPane gamePlayingPane, HitObject hitObject, QualityLabel keyImageLabel) {
+        this.gamePlayingPane = gamePlayingPane;
         this.hitObject = hitObject;
         this.keyImageLabel = keyImageLabel;
         this.currentLineLabel = gamePlayingPane.getLineImageLabels()[hitObject.getIndexX()];
@@ -43,7 +43,7 @@ public class HitObjectThread implements Runnable {
                 gamePlayingPane.getY() - keyImageLabel.getIcon().getIconHeight(),
                 keyImageLabel.getIcon().getIconWidth(),
                 keyImageLabel.getIcon().getIconHeight());
-        gamePlayingPane.add(keyImageLabel, JLayeredPane.DEFAULT_LAYER,0);
+        gamePlayingPane.add(keyImageLabel, JLayeredPane.DEFAULT_LAYER, 0);
             /*
             计算真正的开始动画的时间
             公式含义：

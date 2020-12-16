@@ -1,15 +1,18 @@
 package com.dottorrent.uso.client.service;
 
 /**
- * Description here
+ * 单个滑块/长条
  *
  * @author .torrent
  * @version 1.0.0 2020/11/21
  */
 public class HitObject {
-    private int indexX;
-    private int startTime;
-    private int endTime;
+    private final int indexX;
+    private final int startTime;
+    /**
+     * 结束时间，若为 0，则为短key，若不为 0，则为长条
+     */
+    private final int endTime;
 
     public HitObject(int indexX, int startTime, int endTime) {
         this.indexX = indexX;

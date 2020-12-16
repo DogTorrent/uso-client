@@ -5,17 +5,21 @@
 package com.dottorrent.uso.client.gui.component;
 
 import com.dottorrent.uso.client.service.GameConfig;
-import com.dottorrent.uso.client.service.UserManager;
+import com.dottorrent.uso.client.service.manager.UserManager;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
+ * 注册弹窗，继承了 {@link JDialog}, 大致与{@link LoginDialog} 差不多.
+ *
  * @author .torrent
+ * @see JDialog
+ * @see LoginDialog
  */
 public class RegisterDialog extends JDialog {
     double scalingFactor;
-    private boolean ifRegSuccess=false;
+    private boolean ifRegSuccess = false;
     private JLayeredPane dialogPane;
     private JLabel userIDLabel;
     private JTextField userIDField;
@@ -51,6 +55,18 @@ public class RegisterDialog extends JDialog {
 
     }
 
+    /**
+     * 显示一个注册窗口并通过 {@link #setModal(boolean)} 方法阻塞
+     *
+     * @param owner 所属窗口
+     * @return 是否注册成功
+     */
+    public static boolean showRegisterDialog(Window owner) {
+        RegisterDialog registerDialog = new RegisterDialog(owner, 0.5);
+        registerDialog.setVisible(true);
+        return registerDialog.ifRegSuccess;
+    }
+
     private void initComponents() {
 
         dialogPane = new JLayeredPane();
@@ -66,7 +82,7 @@ public class RegisterDialog extends JDialog {
         registerButton = new QualityButton();
         bgImageLabel = new QualityLabel();
         notifyPanel = new JPanel();
-        notifyLabel=new QualityLabel();
+        notifyLabel = new QualityLabel();
 
         //---- bgImageIcon && bgImageLabel ----
         bgImageIcon = new ImageIcon(getClass().getResource("/pictures/popup_label_bg.png"));
@@ -83,7 +99,7 @@ public class RegisterDialog extends JDialog {
         setModal(true);
         setUndecorated(true);
         setResizable(false);
-        setBackground(new Color(0,0,0,0));
+        setBackground(new Color(0, 0, 0, 0));
         setPreferredSize(bgImageLabel.getPreferredSize());
         setSize(getPreferredSize());
 
@@ -182,7 +198,7 @@ public class RegisterDialog extends JDialog {
                     (int) (48 * scalingFactor)));
             buttonBar.setSize(buttonBar.getPreferredSize());
             buttonBar.setLocation((int) (20 * scalingFactor),
-                    dialogPane.getPreferredSize().height -buttonBar.getPreferredSize().height-(int) (20 * scalingFactor));
+                    dialogPane.getPreferredSize().height - buttonBar.getPreferredSize().height - (int) (20 * scalingFactor));
             dialogPane.add(buttonBar, JLayeredPane.DEFAULT_LAYER);
         }
         this.setContentPane(dialogPane);
@@ -190,33 +206,28 @@ public class RegisterDialog extends JDialog {
         setLocationRelativeTo(getOwner());
     }
 
-    private void initListeners(){
+    private void initListeners() {
         registerButton.addActionListener(e -> {
-            String userID= userIDField.getText();
-            String userName=userNameField.getText();
-            String password= String.valueOf(passwordField.getPassword());
-            if(userID.length()<1||userID.contains(" ")||(!userID.matches("([0-9])+"))||
-                    password.length()<1||password.contains(" ")||
-                    userName.length()<1){
+            String userID = userIDField.getText();
+            String userName = userNameField.getText();
+            String password = String.valueOf(passwordField.getPassword());
+            if (userID.length() < 1 || userID.contains(" ") || (!userID.matches("([0-9])+")) ||
+                    password.length() < 1 || password.contains(" ") ||
+                    userName.length() < 1) {
                 notifyLabel.setForeground(Color.RED);
                 notifyLabel.setText("输入有误");
-            }else {
-                if (UserManager.register(Long.parseLong(userID), userName,password)) {
-                    ifRegSuccess=true;
+            } else {
+                if (UserManager.register(Long.parseLong(userID), userName, password)) {
+                    ifRegSuccess = true;
                     notifyLabel.setForeground(Color.WHITE);
                     notifyLabel.setText("注册成功");
                     RegisterDialog.this.dispose();
-                }else {
+                } else {
                     notifyLabel.setForeground(Color.RED);
                     notifyLabel.setText("注册失败");
                 }
             }
         });
         cancelButton.addActionListener(e -> RegisterDialog.this.dispose());
-    }
-    public static boolean showRegisterDialog(Window owner){
-        RegisterDialog registerDialog=new RegisterDialog(owner,0.5);
-        registerDialog.setVisible(true);
-        return registerDialog.ifRegSuccess;
     }
 }

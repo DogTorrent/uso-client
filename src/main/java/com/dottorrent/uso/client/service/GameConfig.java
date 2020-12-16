@@ -7,25 +7,67 @@ import java.net.URI;
 import java.nio.file.Path;
 
 /**
- * Description here
+ * 游戏设置，提供一系列静态方法
  *
  * @author .torrent
  * @version 1.0.0 2020/11/21
  */
 public class GameConfig {
-    private static int millisPerTick =10;
-    private static int hitDelay=-250;
-    private static int judgeOffset=80;
-    private static int pixelsPerTick =7;
-    private static int startDelay=3000;
-    private static int hitBoxShowDelay=250;
-    private static double scalingFactor=0.5;
-    private static boolean isHighQuality=true;
-    private static Path localDataDirPath = Path.of("data");
-    private static File localSaveFilename = new File("saves.db");
-    private static int[] lineKeyCodes ={KeyEvent.VK_D,KeyEvent.VK_F,KeyEvent.VK_J,KeyEvent.VK_K};
+    /**
+     * tick 间隔毫秒数
+     */
+    private static int millisPerTick = 10;
+    /**
+     * 按键击打延时毫秒数
+     */
+    private static int hitDelay = -250;
+    /**
+     * 进入判定的毫秒范围
+     */
+    private static int judgeOffset = 80;
+    /**
+     * 每 tick 滑块/长条经过的像素
+     */
+    private static int pixelsPerTick = 7;
+    /**
+     * 游戏启动延时毫秒
+     */
+    private static int startDelay = 3000;
+    /**
+     * 滑块显示延时毫秒数
+     */
+    private static int hitBoxShowDelay = 250;
+    /**
+     * 画面缩放比例
+     */
+    private static double scalingFactor = 0.5;
+    /**
+     * 是否进行高品质渲染
+     */
+    private static boolean isHighQuality = true;
+    /**
+     * 本地 data 文件夹
+     */
+    private static final Path localDataDirPath = Path.of("data");
+    /**
+     * 本地数据库名，位于 {@linkplain #localDataDirPath 本地 data 文件夹} 内
+     */
+    private static final File localSaveFilename = new File("saves.db");
+    /**
+     * 按键绑定，默认为 D,F,J,K 四个键
+     */
+    private static final int[] lineKeyCodes = {KeyEvent.VK_D, KeyEvent.VK_F, KeyEvent.VK_J, KeyEvent.VK_K};
+    /**
+     * 线上模式的用户服务器地址
+     */
     private static URI userServerUri = URI.create("http://127.0.0.1:14514/uso-server/user");
+    /**
+     * 线上模式的游戏结果服务器地址
+     */
     private static URI resultServerUri = URI.create("http://127.0.0.1:14514/uso-server/result");
+    /**
+     * 线上模式的谱面服务器地址
+     */
     private static URI musicServerUri = URI.create("http://127.0.0.1:14514/uso-server/music");
 
     public static int getMillisPerTick() {
@@ -68,11 +110,12 @@ public class GameConfig {
         GameConfig.scalingFactor = scalingFactor;
     }
 
-    public static void setHighQuality(boolean highQuality) {
-        GameConfig.isHighQuality = highQuality;
-    }
     public static boolean getHighQuality() {
         return isHighQuality;
+    }
+
+    public static void setHighQuality(boolean highQuality) {
+        GameConfig.isHighQuality = highQuality;
     }
 
     public static int getStartDelay() {
