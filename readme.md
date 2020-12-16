@@ -12,20 +12,22 @@
 
 #### 2. 设计
 ~~基本都没有实现，别看了别看了呜呜呜~~  
-![workflow](workflow.png)  
-注意：谱面下载的功能并没有实现，CDN也没做
+![workflow](https://cdn.jsdelivr.net/gh/DogTorrent/uso-client/workflow.png)  
+注意：谱面下载的功能并没有实现，CDN也没做，啥都么有
 
 #### 3. 实现与测试
 client 端主类为 LauncherFrame  
 server 端主类为 GameServer  
 线上模式需要服务端  
-其余内容请查看代码注释和javadoc
+其余内容请查看代码注释和javadoc  
 
 #### 4. 指南
 1. 有个p的好指南，直接玩就是了
 2. 别用java写图形
+3. 密码直传真爽啊，安全去他妈
 
 #### 5. 演示
+模糊小视频~  
 <video id="video" controls="">
-    <source id="mp4" src="demo_video.mp4" type="video/mp4">
+    <source id="mp4" src="https://cdn.jsdelivr.net/gh/DogTorrent/uso-client/demo_video.mp4" type="video/mp4">
 </video>  
