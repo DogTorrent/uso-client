@@ -27,7 +27,7 @@ server 端主类为 GameServer
 3. 密码直传真爽啊，安全去他妈
 
 #### 5. 演示
-模糊小视频~  
+[模糊小视频~](https://cdn.jsdelivr.net/gh/DogTorrent/uso-client/demo_video.mp4)  
 <video id="video" controls="">
     <source id="mp4" src="https://cdn.jsdelivr.net/gh/DogTorrent/uso-client/demo_video.mp4" type="video/mp4">
 </video>  
