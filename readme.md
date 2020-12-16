@@ -28,6 +28,4 @@ server 端主类为 GameServer
 
 #### 5. 演示
 [模糊小视频~](https://cdn.jsdelivr.net/gh/DogTorrent/uso-client/demo_video.mp4)  
-<video id="video" controls="">
-    <source id="mp4" src="https://cdn.jsdelivr.net/gh/DogTorrent/uso-client/demo_video.mp4" type="video/mp4">
-</video>  
+<video src="https://cdn.jsdelivr.net/gh/DogTorrent/uso-client/demo_video.mp4" controls="controls" width="640" height="360">不支持播放该视频！</video>  
